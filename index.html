@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>Bardia Coin Mobile</title>
+    <title>Bardia Coin Pro</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,17 +14,20 @@
 <body>
     <div class="app-container">
         
-        <header class="mobile-header">
+        <header class="pro-header">
             <div class="brand">
                 <img src="bardiya.png" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
                 <div class="brand-text">
                     <h2>بردیا کوین</h2>
-                    <span>مین‌نت فعال</span>
+                    <span class="badge"><i class="fa-solid fa-circle-check"></i> متصل</span>
                 </div>
             </div>
+            
             <div class="user-pill">
                 <span id="username">بارگذاری...</span>
-                <div id="avatar-container"></div>
+                <div class="avatar-wrapper" id="avatar-container">
+                    <i class="fa-solid fa-user"></i>
+                </div>
             </div>
         </header>
 
@@ -32,7 +35,7 @@
             
             <section id="tab-home" class="app-tab active">
                 <div class="score-board">
-                    <span class="score-label">موجودی سکه</span>
+                    <span class="score-label">موجودی فعلی شما</span>
                     <h1 id="score">0</h1>
                 </div>
 
@@ -58,17 +61,17 @@
                 <div class="daily-grid" id="daily-grid"></div>
                 <button id="claim-daily-btn" class="btn-claim-large" disabled>در حال بررسی...</button>
 
-                <h3 class="section-title" style="margin-top: 20px;">ماموریت‌ها</h3>
+                <h3 class="section-title" style="margin-top: 25px;">ماموریت‌های شما</h3>
                 <div class="compact-list" id="achievements-container"></div>
             </section>
 
             <section id="tab-upgrades" class="app-tab">
-                <h3 class="section-title">فروشگاه قدرت</h3>
+                <h3 class="section-title">فروشگاه ابزار</h3>
                 <div class="compact-list" id="upgrades-container"></div>
             </section>
 
             <section id="tab-stats" class="app-tab">
-                <h3 class="section-title">وضعیت اکانت</h3>
+                <h3 class="section-title">گزارش حساب کاربری</h3>
                 <div class="stats-box">
                     <div class="stat-line"><span>کل کلیک‌ها:</span><strong id="stat-total-taps">0</strong></div>
                     <div class="stat-line"><span>کل سکه تاریخ:</span><strong id="stat-lifetime-score">0</strong></div>
@@ -84,19 +87,19 @@
 
             <section id="tab-leaderboard" class="app-tab">
                 <div class="empty-state">
-                    <i class="fa-solid fa-server"></i>
+                    <div class="icon-circle"><i class="fa-solid fa-server"></i></div>
                     <h3>در حال توسعه...</h3>
-                    <p>اتصال به دیتابیس جهانی به زودی انجام می‌شود.</p>
+                    <p>بخش برترین‌ها پس از راه‌اندازی دیتابیس جهانی به این قسمت اضافه خواهد شد.</p>
                 </div>
             </section>
 
             <section id="tab-listing" class="app-tab">
                 <div class="listing-box">
                     <div class="rocket-scene">
-                        <div class="rocket-body">
-                            <i class="fa-solid fa-space-shuttle"></i>
-                            <div class="rocket-fire"></div>
+                        <div class="rocket-icon-wrapper">
+                            <i class="fa-solid fa-rocket"></i>
                         </div>
+                        <div class="rocket-fire"></div>
                     </div>
                     <h2>آماده پرتاب!</h2>
                     <p class="listing-date">۱۴ تیر ۱۴۰۵</p>
@@ -116,20 +119,22 @@
 
         </main>
 
-        <nav class="mobile-nav">
-            <button class="nav-btn active" data-tab="tab-home"><i class="fa-solid fa-circle-dot"></i><span>بازی</span></button>
-            <button class="nav-btn has-badge" data-tab="tab-achievements">
-                <div class="icon-wrapper">
-                    <i class="fa-solid fa-gift"></i>
-                    <span class="red-badge" id="badge-ach"></span>
-                </div>
-                <span>جوایز</span>
-            </button>
-            <button class="nav-btn" data-tab="tab-upgrades"><i class="fa-solid fa-bolt"></i><span>ارتقا</span></button>
-            <button class="nav-btn" data-tab="tab-stats"><i class="fa-solid fa-chart-simple"></i><span>آمار</span></button>
-            <button class="nav-btn" data-tab="tab-leaderboard"><i class="fa-solid fa-trophy"></i><span>برترین‌ها</span></button>
-            <button class="nav-btn" data-tab="tab-listing"><i class="fa-solid fa-rocket"></i><span>عرضه</span></button>
-        </nav>
+        <div class="nav-wrapper">
+            <nav class="floating-nav">
+                <button class="nav-btn active" data-tab="tab-home"><i class="fa-solid fa-circle-dot"></i><span>بازی</span></button>
+                <button class="nav-btn has-badge" data-tab="tab-achievements">
+                    <div class="icon-wrapper">
+                        <i class="fa-solid fa-gift"></i>
+                        <span class="red-badge" id="badge-ach"></span>
+                    </div>
+                    <span>جوایز</span>
+                </button>
+                <button class="nav-btn" data-tab="tab-upgrades"><i class="fa-solid fa-bolt"></i><span>ارتقا</span></button>
+                <button class="nav-btn" data-tab="tab-stats"><i class="fa-solid fa-chart-simple"></i><span>آمار</span></button>
+                <button class="nav-btn" data-tab="tab-leaderboard"><i class="fa-solid fa-trophy"></i><span>برترین‌ها</span></button>
+                <button class="nav-btn" data-tab="tab-listing"><i class="fa-solid fa-rocket"></i><span>عرضه</span></button>
+            </nav>
+        </div>
     </div>
 
     <script src="script.js"></script>
