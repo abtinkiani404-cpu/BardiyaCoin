@@ -9,151 +9,121 @@
     --text-muted: #64748b;
     --border-line: rgba(6, 182, 212, 0.12);
     --text-green: #10b981;
+    --text-red: #ef4444;
 }
 
-* {
-    margin: 0; padding: 0; box-sizing: border-box;
-    font-family: 'Vazirmatn', sans-serif;
-    user-select: none; -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    background-color: var(--bg-dark-core);
-    color: var(--text-pure);
-    overflow: hidden; height: 100vh; display: flex; justify-content: center;
-    background: radial-gradient(circle at top, #091224 0%, #010307 100%);
-}
-
-.app-container {
-    width: 100%; max-width: 450px; height: 100vh;
-    display: flex; flex-direction: column; position: relative; padding: 12px;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Vazirmatn', sans-serif; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+body { background-color: var(--bg-dark-core); color: var(--text-pure); overflow: hidden; height: 100vh; display: flex; justify-content: center; background: radial-gradient(circle at top, #091224 0%, #010307 100%); }
+.app-container { width: 100%; max-width: 450px; height: 100vh; display: flex; flex-direction: column; position: relative; padding: 12px; }
 
 /* هدر لوکس */
-.crypto-header {
-    background: var(--surface-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-line); border-radius: 14px; padding: 10px;
-    display: flex; justify-content: space-between; align-items: center;
-}
+.crypto-header { background: var(--surface-glass); backdrop-filter: blur(16px); border: 1px solid var(--border-line); border-radius: 14px; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
 .brand-zone { display: flex; align-items: center; gap: 8px; }
 .bot-logo { width: 36px; height: 36px; border-radius: 8px; border: 1.5px solid var(--crypto-gold); object-fit: cover; }
 .brand-titles h2 { font-size: 13px; font-weight: 900; }
 .brand-titles .sub-crypto { font-size: 8px; color: var(--neon-cyan); font-weight: 700; display: block; }
-
 .tg-user-panel { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.4); padding: 5px 10px; border-radius: 10px; }
 .avatar-container { width: 24px; height: 24px; }
 #user-avatar { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 1px solid var(--neon-cyan); }
-.avatar-fallback {
-    width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #0891b2, #0f172a);
-    color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900;
-}
+.avatar-fallback { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, #0891b2, #0f172a); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 900; }
 #username { font-size: 11px; font-weight: 700; max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #94a3b8; }
 
 /* تب‌ها و محتوا */
 .viewport-content { flex: 1; position: relative; margin-top: 12px; margin-bottom: 80px; overflow-y: auto; padding-right: 2px; }
 .viewport-content::-webkit-scrollbar { display: none; }
-.app-tab { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; overflow-y: auto; pb: 20px; }
+.app-tab { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; overflow-y: auto; padding-bottom: 20px; }
 .app-tab.active { display: flex; }
 
 .balance-display { text-align: center; margin-top: 5px; }
 .crypto-indicator { font-size: 10px; color: var(--crypto-gold); font-weight: 700; letter-spacing: 1px; margin-bottom: 2px; }
 #score { font-size: 3.2rem; font-weight: 900; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
 
-/* نکسوس و بهینه‌سازی پردازش سه بعدی سکه */
-.click-nexus { flex: 1; display: flex; align-items: center; justify-content: center; perspective: 1000px; }
-.tech-medallion {
-    position: relative; width: 220px; height: 220px; border-radius: 50%;
-    background: radial-gradient(circle, #0f172a 0%, #02040a 100%);
-    border: 3px solid #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer;
-    will-change: transform; transition: transform 0.1s ease-out;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 0 25px rgba(6, 182, 212, 0.1);
-}
-.medallion-core { width: 85%; height: 85%; border-radius: 50%; overflow: hidden; border: 3px solid var(--crypto-gold); z-index: 5; }
+/* نکسوس استخراج و سکه */
+.click-nexus { flex: 1; display: flex; align-items: center; justify-content: center; }
+.tech-medallion { position: relative; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, #0f172a 0%, #02040a 100%); border: 3px solid #1e293b; display: flex; align-items: center; justify-content: center; cursor: pointer; transform-style: preserve-3d; transition: transform 0.05s ease-out; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 0 25px rgba(6, 182, 212, 0.1); }
+.medallion-core { width: 85%; height: 85%; border-radius: 50%; overflow: hidden; border: 3px solid var(--crypto-gold); z-index: 5; pointer-events: none; }
 .medallion-img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-
 .laser-ring, .laser-ring-reverse { position: absolute; width: 104%; height: 104%; border-radius: 50%; border: 1px dashed rgba(6, 182, 212, 0.25); pointer-events: none; }
 .laser-ring { animation: rotClock 30s linear infinite; }
 .laser-ring-reverse { width: 110%; height: 110%; border: 1px double rgba(245, 158, 11, 0.15); animation: rotCounter 30s linear infinite; }
 @keyframes rotClock { 100% { transform: rotate(360deg); } }
 @keyframes rotCounter { 100% { transform: rotate(-360deg); } }
 
-/* پاپ آپ‌های عددی روان فرکانس بالا */
-.floating-number {
-    position: absolute; font-size: 2.2rem; font-weight: 900; color: var(--crypto-gold); pointer-events: none;
-    will-change: transform, opacity; animation: techFloat 0.5s ease-out forwards;
-    text-shadow: 0 0 12px var(--crypto-gold), 0 2px 5px #000;
-}
-@keyframes techFloat {
-    0% { opacity: 1; transform: translateY(0) scale(1.1); }
-    100% { opacity: 0; transform: translateY(-80px) scale(0.85); }
-}
+/* پاپ آپ عددی استخراج */
+.floating-number { position: absolute; font-size: 2.2rem; font-weight: 900; color: var(--crypto-gold); pointer-events: none; animation: techFloat 0.5s ease-out forwards; text-shadow: 0 0 12px var(--crypto-gold), 0 2px 5px #000; z-index: 50; }
+@keyframes techFloat { 0% { opacity: 1; transform: translateY(0) scale(1.1); } 100% { opacity: 0; transform: translateY(-80px) scale(0.85); } }
 
-/* بخش سیستم انرژی */
-.energy-matrix { background: var(--surface-glass); border: 1px solid var(--border-line); padding: 12px; border-radius: 12px; }
+/* سیستم انرژی */
+.energy-matrix { background: var(--surface-glass); border: 1px solid var(--border-line); padding: 12px; border-radius: 12px; margin-top: auto; }
 .matrix-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-weight: 700; font-size: 11px; }
+.text-cyan { color: var(--neon-cyan); }
+.text-green { color: var(--text-green); }
+.text-red { color: var(--text-red); font-weight: bold; }
 .matrix-track { width: 100%; height: 8px; background: #060913; border-radius: 10px; overflow: hidden; }
-.matrix-fill { height: 100%; background: linear-gradient(90deg, #0284c7, var(--neon-cyan)); width: 100%; box-shadow: 0 0 10px rgba(6, 182, 212, 0.5); }
+.matrix-fill { height: 100%; background: linear-gradient(90deg, #0284c7, var(--neon-cyan)); width: 100%; box-shadow: 0 0 10px rgba(6, 182, 212, 0.5); transition: width 0.1s linear; }
 
-/* استایل ماژول‌های ارتقا و دستاوردها */
+/* کارت‌های ارتقا و دستاوردها */
 .section-title { font-size: 13px; font-weight: 900; color: #94a3b8; margin: 10px 0; display: flex; align-items: center; gap: 6px; }
-.upgrades-list, .achievements-list { display: flex; flex-direction: column; gap: 10px; max-height: 100%; overflow-y: auto; }
+.upgrades-list, .achievements-list { display: flex; flex-direction: column; gap: 10px; }
+.upgrade-card, .achievement-card { background: var(--surface-glass); border: 1px solid var(--border-line); border-radius: 12px; padding: 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.card-info { flex: 1; }
+.card-info h4 { font-size: 13px; font-weight: 700; margin-bottom: 3px; color: #fff; display: flex; align-items: center; gap: 5px; }
+.lvl-badge { background: rgba(6, 182, 212, 0.15); color: var(--neon-cyan); font-size: 9px; padding: 2px 6px; border-radius: 8px; border: 1px solid var(--border-line); }
+.card-info p { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+.card-info .price { font-size: 11px; color: var(--crypto-gold); font-weight: 700; margin-top: 5px; }
 
-.upgrade-card, .achievement-card {
-    background: var(--surface-glass); border: 1px solid var(--border-line); border-radius: 12px;
-    padding: 12px; display: flex; justify-content: space-between; align-items: center;
-}
-.card-details h4 { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-.card-details p { font-size: 10px; color: var(--text-muted); }
-.card-details .price { font-size: 11px; color: var(--crypto-gold); font-weight: 700; margin-top: 4px; }
+.btn-action { background: linear-gradient(135deg, #0891b2, #06b6d4); border: none; color: white; padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; min-width: 70px; gap: 5px; }
+.btn-action:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
 
-.btn-buy, .btn-status {
-    background: linear-gradient(135deg, #0891b2, #06b6d4); border: none; color: white;
-    padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;
-}
-.btn-buy:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
-.btn-status.claimed { background: #1e293b; color: var(--text-green); border: 1px solid rgba(16,185,129,0.2); }
+/* آیکون وضعیت دستاوردها */
+.ach-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.ach-icon.locked { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: var(--text-red); }
+.ach-icon.ready { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: var(--text-green); animation: pulseGlow 1.5s infinite; }
+
+@keyframes pulseGlow { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
 
 /* پنل پاداش روزانه */
 .daily-rewards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
-.daily-day-box {
-    background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;
-    padding: 8px; text-align: center; font-size: 10px; color: #64748b;
-}
+.daily-day-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 8px; text-align: center; font-size: 10px; color: #64748b; }
 .daily-day-box.active { border-color: var(--neon-cyan); color: #fff; background: rgba(6,182,212,0.05); }
 .daily-day-box.claimed { border-color: var(--text-green); color: var(--text-green); opacity: 0.7; }
-.action-btn {
-    width: 100%; padding: 10px; background: linear-gradient(90deg, #f59e0b, #d97706); border: none;
-    border-radius: 10px; color: #fff; font-weight: 700; font-size: 12px; cursor: pointer; margin-top: 5px;
-}
-.action-btn:disabled { background: #1e293b; color: #475569; cursor: not-allowed; }
+.action-btn { width: 100%; padding: 12px; background: #1e293b; border: 1px solid var(--border-line); border-radius: 10px; color: #94a3b8; font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
+.action-btn.ready-glow { background: linear-gradient(90deg, #10b981, #059669); color: #fff; border-color: #34d399; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); cursor: pointer; }
 
-/* آمار و نگهدارنده‌ها */
+/* آمار */
 .pro-card { background: var(--surface-glass); border: 1px solid var(--border-line); border-radius: 14px; padding: 15px; }
-.pro-card h3 { font-size: 13px; color: var(--neon-cyan); margin-bottom: 12px; }
-.stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 12px; }
-.text-green { color: var(--text-green); }
+.pro-card h3 { font-size: 13px; color: var(--neon-cyan); margin-bottom: 15px; border-bottom: 1px solid var(--border-line); padding-bottom: 10px; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 12px; }
+.stat-row:last-child { border-bottom: none; }
+.stat-val { font-weight: 900; color: #fff; font-family: monospace; font-size: 13px; }
 
-.pro-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
-.hex-icon { width: 60px; height: 60px; background: rgba(6,182,212,0.04); border: 1px solid var(--border-line); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--neon-cyan); margin-bottom: 14px; }
-.pro-placeholder h3 { font-size: 14px; color: var(--crypto-gold); margin-bottom: 6px; }
-.pro-placeholder p { font-size: 11px; color: #475569; max-width: 260px; line-height: 1.6; }
+/* لیستینگ کانت‌داون */
+.listing-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 10px; text-align: center; background: var(--surface-glass); border: 1px solid var(--border-line); border-radius: 16px; margin-top: 10px; }
+.rocket-icon { font-size: 45px; color: var(--crypto-gold); margin-bottom: 15px; text-shadow: 0 0 20px rgba(245, 158, 11, 0.5); }
+.animate-float { animation: floaty 3s ease-in-out infinite; }
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.listing-desc { font-size: 12px; color: #94a3b8; margin-bottom: 25px; max-width: 260px; line-height: 1.6; }
 
-/* ناوبری تاکتیکال پایین */
-.tactical-navbar {
-    position: absolute; bottom: 10px; left: 10px; right: 10px;
-    background: rgba(4, 7, 16, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 14px; padding: 5px; display: flex; justify-content: space-between; z-index: 100;
-}
+.countdown-container { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 16px; border: 1px solid var(--border-line); box-shadow: inset 0 0 20px rgba(6, 182, 212, 0.1); width: 100%; }
+.time-box { display: flex; flex-direction: column; align-items: center; width: 50px; }
+.time-box span { font-size: 26px; font-weight: 900; color: #fff; font-family: monospace; text-shadow: 0 0 10px var(--neon-cyan); line-height: 1; margin-bottom: 5px; }
+.time-box p { font-size: 10px; color: var(--neon-cyan); font-weight: 700; }
+.colon { font-size: 24px; font-weight: 900; color: #64748b; margin-top: -15px; animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.3; } }
+.target-date-text { font-size: 11px; color: #64748b; margin-top: 20px; letter-spacing: 0.5px; background: rgba(255,255,255,0.05); padding: 6px 12px; border-radius: 20px; }
+
+/* ناوبری */
+.tactical-navbar { position: absolute; bottom: 10px; left: 10px; right: 10px; background: rgba(4, 7, 16, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 14px; padding: 5px; display: flex; justify-content: space-between; z-index: 100; }
 .nav-node { background: none; border: none; outline: none; display: flex; flex-direction: column; align-items: center; gap: 3px; color: #334155; cursor: pointer; flex: 1; padding: 6px 0; border-radius: 10px; transition: all 0.2s ease; }
 .nav-node i { font-size: 15px; }
 .nav-node span { font-size: 9px; font-weight: 700; }
 .nav-node.active { color: var(--neon-cyan); background: rgba(6, 182, 212, 0.05); }
 
-/* صفحه قفل چیت */
-.cheat-overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background:#02040a; z-index: 9999; display:none; align-items:center; justify-content:center; padding:30px; }
-.lock-box { text-align:center; background:rgba(239,68,68,0.05); border:1px solid #ef4444; padding:30px; border-radius:20px; max-width:320px; }
-.lock-box i { font-size: 45px; color:#ef4444; margin-bottom:15px; }
+/* صفحه قفل آنتی چیت */
+.cheat-overlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(2, 4, 10, 0.95); backdrop-filter: blur(5px); z-index: 9999; display:none; align-items:center; justify-content:center; padding:30px; }
+.lock-box { text-align:center; background:#1e1b2e; border:1px solid #ef4444; padding:30px; border-radius:20px; max-width:320px; box-shadow: 0 10px 40px rgba(239, 68, 68, 0.2); }
+.lock-box i { font-size: 50px; color:#ef4444; margin-bottom:15px; }
 .lock-box h2 { font-size:16px; margin-bottom:10px; color:#fff; }
-.lock-box p { font-size:12px; color:#94a3b8; line-height:1.6; margin-bottom:20px; }
-.lock-box button { background:#ef4444; color:#fff; border:none; padding:8px 20px; border-radius:8px; font-weight:700; cursor:pointer; }
+.lock-box p { font-size:12px; color:#94a3b8; line-height:1.6; margin-bottom:25px; }
+.lock-box button { background:#ef4444; color:#fff; border:none; padding:10px 24px; border-radius:10px; font-weight:700; cursor:pointer; width: 100%; transition: background 0.3s; }
+.lock-box button:hover { background: #dc2626; }
