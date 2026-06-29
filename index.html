@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <!-- جلوگیری از زوم شدن صفحه با دابل کلیک -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بردیا کوین</title>
+    <!-- اتصال به API تلگرام -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- هدر بازی -->
+        <header>
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">👤</div>
+                <span id="username">در حال بارگذاری...</span>
+            </div>
+        </header>
+
+        <!-- بخش امتیاز و سکه -->
+        <main>
+            <div class="score-display">
+                <img src="https://cdn-icons-png.flaticon.com/512/1490/1490853.png" alt="Coin" class="score-icon">
+                <h1 id="score">0</h1>
+            </div>
+
+            <div class="coin-wrapper" id="coin-wrapper">
+                <!-- می‌تونی اینجا عکس بردیا رو بذاری! -->
+                <div class="main-coin" id="coin">
+                    😎
+                </div>
+            </div>
+        </main>
+
+        <!-- نوار انرژی -->
+        <footer>
+            <div class="energy-stats">
+                <span id="energy-text">1000 / 1000</span>
+                <span>⚡</span>
+            </div>
+            <div class="energy-bar-bg">
+                <div class="energy-bar-fill" id="energy-fill"></div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
