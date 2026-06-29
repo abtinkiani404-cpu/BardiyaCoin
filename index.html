@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bardia Coin Kawaii</title>
+    <title>Bardia Coin Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -11,114 +11,119 @@
 <body>
     <div class="app-container">
         
-        <div class="bot-brand-header">
-            <div class="brand-right">
-                <img src="bardiya.png" class="brand-icon" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
-                <div class="brand-text">
+        <header class="crypto-header">
+            <div class="brand-zone">
+                <img src="bardiya.png" class="bot-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
+                <div class="brand-titles">
                     <h2>بردیا کوین</h2>
-                    <span class="version">نسخه گوگولی v2.0</span>
+                    <span class="sub-crypto">MAINNET CORE</span>
                 </div>
             </div>
-            <div class="user-profile-card">
-                <img id="user-avatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Avatar">
-                <span id="username">بارگذاری...</span>
-            </div>
-        </div>
-
-        <main class="main-content">
             
-            <section id="tab-home" class="game-tab active">
-                <div class="score-wrapper">
-                    <img src="https://cdn-icons-png.flaticon.com/512/7891/7891836.png" class="cute-coin-shadow" alt="coin icon">
+            <div class="tg-user-panel">
+                <div class="avatar-container">
+                    <img id="user-avatar" src="" alt="" style="display:none;">
+                    <div id="user-avatar-fallback" class="avatar-fallback">B</div>
+                </div>
+                <span id="username">CONNECTING...</span>
+            </div>
+        </header>
+
+        <main class="viewport-content">
+            
+            <section id="tab-home" class="app-tab active">
+                <div class="balance-display">
+                    <div class="crypto-indicator"><i class="fa-solid fa-bolt"></i> BARDIYA TOKEN</div>
                     <h1 id="score">0</h1>
                 </div>
 
-                <div class="coin-playground" id="coin-wrapper">
-                    <div class="jelly-coin" id="coin">
-                        <div class="jelly-inner">
-                            <img src="bardiya.png" alt="Bardiya" class="bardia-avatar-main" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
+                <div class="click-nexus" id="coin-wrapper">
+                    <div class="tech-medallion" id="coin">
+                        <div class="medallion-core">
+                            <img src="bardiya.png" alt="Bardiya Core" class="medallion-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
                         </div>
-                        <div class="sparkle-glow"></div>
+                        <div class="laser-ring"></div>
+                        <div class="laser-ring-reverse"></div>
                     </div>
                 </div>
 
-                <div class="cute-energy-box">
-                    <div class="energy-info">
-                        <span><i class="fa-solid fa-candy-cane text-pink"></i> انرژی کاوایی</span>
+                <div class="energy-matrix">
+                    <div class="matrix-info">
+                        <span><i class="fa-solid fa-charging-station text-cyan"></i> ظرفیت هسته انرژی</span>
                         <span id="energy-text">200 / 200</span>
                     </div>
-                    <div class="bar-container">
-                        <div class="bar-fluid" id="energy-fill"></div>
+                    <div class="matrix-track">
+                        <div class="matrix-fill" id="energy-fill"></div>
                     </div>
                 </div>
             </section>
 
-            <section id="tab-achievements" class="game-tab">
-                <div class="cute-placeholder">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3112/3112946.png" alt="trophy">
-                    <h2>دستاوردها</h2>
-                    <p>جایزه‌ها و مأموریت‌های قفل‌شده بردیا!</p>
+            <section id="tab-achievements" class="app-tab">
+                <div class="pro-placeholder">
+                    <div class="hex-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>دستاوردها (ACHIEVEMENTS)</h3>
+                    <p>سیستم پاداش و قراردادهای هوشمند شبکه به‌زودی در این فاز بارگذاری می‌شود.</p>
                 </div>
             </section>
 
-            <section id="tab-stats" class="game-tab">
-                <div class="cute-placeholder">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3300/3300059.png" alt="stats">
-                    <h2>آمار بازی</h2>
-                    <p>چقدر روی صورت رفیقت تپ کردی؟</p>
+            <section id="tab-stats" class="app-tab">
+                <div class="pro-placeholder">
+                    <div class="hex-icon"><i class="fa-solid fa-chart-network"></i></div>
+                    <h3>آمار شبکه (NETWORK STATS)</h3>
+                    <p>تحلیل تراکنش‌های تپ، حجم استخراج کل و هش‌ریت سرورها.</p>
                 </div>
             </section>
 
-            <section id="tab-leaderboard" class="game-tab">
-                <div class="cute-placeholder">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3077/3077222.png" alt="leaderboard">
-                    <h2>رتبه‌بندی</h2>
-                    <p>جدول کسانی که بیشترین تپ رو زدن.</p>
+            <section id="tab-leaderboard" class="app-tab">
+                <div class="pro-placeholder">
+                    <div class="hex-icon"><i class="fa-solid fa-ranking-star"></i></div>
+                    <h3>لیدربورد (LEADERBOARD)</h3>
+                    <p>رقابت زنده کاربران بر سر رتبه‌های برتر استخراج توکن بردیا.</p>
                 </div>
             </section>
 
-            <section id="tab-upgrades" class="game-tab">
-                <div class="cute-placeholder">
-                    <img src="https://cdn-icons-png.flaticon.com/512/4144/4144421.png" alt="upgrades">
-                    <h2>ارتقا قدرت</h2>
-                    <p>خرید بمب انرژی و مولتی‌تپ فانتزی.</p>
+            <section id="tab-upgrades" class="app-tab">
+                <div class="pro-placeholder">
+                    <div class="hex-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                    <h3>ارتقا سیستم (BOOSTERS)</h3>
+                    <p>خرید ماژول‌های Multi-Tap، بهینه‌ساز باتری و ربات‌های خودکار استخراج استخراج.</p>
                 </div>
             </section>
 
-            <section id="tab-listing" class="game-tab">
-                <div class="cute-placeholder">
-                    <img src="https://cdn-icons-png.flaticon.com/512/6124/6124991.png" alt="rocket">
-                    <h2>لیستینگ توکن</h2>
-                    <p>شمارش معکوس پرواز توکن بردیا به کهکشان!</p>
+            <section id="tab-listing" class="app-tab">
+                <div class="pro-placeholder">
+                    <div class="hex-icon"><i class="fa-solid fa-rocket"></i></div>
+                    <h3>لیستینگ توکن (LISTING TIME)</h3>
+                    <p>شمارش معکوس اتصال به شبکه TON و عرضه در صرافی‌های بین‌المللی Tier-1.</p>
                 </div>
             </section>
 
         </main>
 
-        <nav class="bouncy-navbar">
-            <button class="nav-btn active" data-tab="tab-home">
-                <i class="fa-solid fa-face-smile-wink"></i>
-                <span>بازی</span>
+        <nav class="tactical-navbar">
+            <button class="nav-node active" data-tab="tab-home">
+                <i class="fa-solid fa-terminal"></i>
+                <span>استخراج</span>
             </button>
-            <button class="nav-btn" data-tab="tab-achievements">
-                <i class="fa-solid fa-star"></i>
+            <button class="nav-node" data-tab="tab-achievements">
+                <i class="fa-solid fa-award"></i>
                 <span>جوایز</span>
             </button>
-            <button class="nav-btn" data-tab="tab-stats">
-                <i class="fa-solid fa-chart-bar"></i>
+            <button class="nav-node" data-tab="tab-stats">
+                <i class="fa-solid fa-chart-line"></i>
                 <span>آمار</span>
             </button>
-            <button class="nav-btn" data-tab="tab-leaderboard">
-                <i class="fa-solid fa-crown"></i>
+            <button class="nav-node" data-tab="tab-leaderboard">
+                <i class="fa-solid fa-trophy"></i>
                 <span>لیگ</span>
             </button>
-            <button class="nav-btn" data-tab="tab-upgrades">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <button class="nav-node" data-tab="tab-upgrades">
+                <i class="fa-solid fa-circle-arrow-up"></i>
                 <span>ارتقا</span>
             </button>
-            <button class="nav-btn" data-tab="tab-listing">
-                <i class="fa-solid fa-rocket"></i>
-                <span>لیست</span>
+            <button class="nav-node" data-tab="tab-listing">
+                <i class="fa-solid fa-circle-nodes"></i>
+                <span>لیستینگ</span>
             </button>
         </nav>
 
