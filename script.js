@@ -1,14 +1,15 @@
 // اتصال به تلگرام
 const tg = window.Telegram.WebApp;
-tg.expand(); // باز شدن مینی‌اپ در حالت تمام صفحه
+tg.expand(); 
+if (tg.ready) tg.ready();
 
-// تنظیمات اولیه بازی
+// مقادیر اولیه بازی
 let score = parseInt(localStorage.getItem('bardia_score')) || 0;
 let energy = parseInt(localStorage.getItem('bardia_energy')) || 1000;
 const maxEnergy = 1000;
-const energyRegenRate = 1; // مقدار شارژ انرژی در هر ثانیه
+const energyRegenRate = 1; 
 
-// دریافت المان‌های صفحه
+// فراخوانی المان‌ها
 const scoreEl = document.getElementById('score');
 const energyTextEl = document.getElementById('energy-text');
 const energyFillEl = document.getElementById('energy-fill');
@@ -16,68 +17,91 @@ const coinEl = document.getElementById('coin');
 const coinWrapper = document.getElementById('coin-wrapper');
 const usernameEl = document.getElementById('username');
 
-// نمایش اسم کاربر تلگرام (اگر موجود بود)
+// هندل کردن نام کاربر تلگرام
 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
     usernameEl.innerText = tg.initDataUnsafe.user.first_name;
 } else {
-    usernameEl.innerText = "مهمان ناخوانده";
+    usernameEl.innerText = "کاربر تست تلگرام";
 }
 
-// تابع آپدیت کردن رابط کاربری
+// سیستم مدیریت تب‌ها (Navigation Bar)
+const navItems = document.querySelectorAll('.nav-item');
+const gameTabs = document.querySelectorAll('.game-tab');
+
+navItems.forEach(item => {
+    item.addEventListener('click', () => {
+        // حذف حالت فعال از دکمه‌ها و تب‌های قبلی
+        navItems.forEach(nav => nav.classList.remove('active'));
+        gameTabs.forEach(tab => tab.classList.remove('active'));
+
+        // فعال کردن دکمه فشرده شده
+        item.classList.add('active');
+        
+        // پیدا کردن و نمایش تب مربوطه
+        const targetTabId = item.getAttribute('data-tab');
+        document.getElementById(targetTabId).classList.add('active');
+
+        // ایجاد یک فیدبک لرزشی بسیار ریز موقع جابجایی منو
+        if(tg.HapticFeedback) {
+            tg.HapticFeedback.impactOccurred('light');
+        }
+    });
+});
+
+// به‌روزرسانی ظاهر عددی مینی‌اپ
 function updateUI() {
     scoreEl.innerText = score.toLocaleString();
-    energyTextEl.innerText = `${energy} / ${maxEnergy}`;
+    energyTextEl.innerText = `${energy}/${maxEnergy}`;
     const energyPercentage = (energy / maxEnergy) * 100;
     energyFillEl.style.width = `${energyPercentage}%`;
 }
 
-// ایجاد انیمیشن شناور +1
+// انیمیشن تپ خوردن و عدد شناور
 function createFloatingNumber(x, y) {
     const floatEl = document.createElement('div');
     floatEl.classList.add('floating-number');
     floatEl.innerText = '+1';
     
-    // تنظیم موقعیت دقیق روی جایی که کلیک شده
-    floatEl.style.left = `${x - 15}px`;
-    floatEl.style.top = `${y - 30}px`;
+    floatEl.style.left = `${x - 20}px`;
+    floatEl.style.top = `${y - 40}px`;
     
     coinWrapper.appendChild(floatEl);
 
-    // حذف عنصر بعد از پایان انیمیشن تا رم گوشی پر نشه
     setTimeout(() => {
         floatEl.remove();
-    }, 1000);
+    }, 800);
 }
 
-// هندل کردن رویداد کلیک/تاچ روی سکه
+// منطق ضربه زدن روی سکه
 coinEl.addEventListener('pointerdown', (e) => {
     if (energy > 0) {
-        // افزایش امتیاز و کاهش انرژی
         score += 1;
         energy -= 1;
         
-        // ذخیره در مرورگر
         localStorage.setItem('bardia_score', score);
         localStorage.setItem('bardia_energy', energy);
         
         updateUI();
         
-        // اجرای ویبره تلگرام (Haptic Feedback)
-        tg.HapticFeedback.impactOccurred('light');
+        // ویبره زدن واقعی گوشی در تلگرام
+        if (tg.HapticFeedback) {
+            tg.HapticFeedback.impactOccurred('medium');
+        }
 
-        // گرفتن مختصات کلیک برای انیمیشن
+        // محاسبه دقیق مختصات نقطه تاچ
         const rect = coinWrapper.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
         createFloatingNumber(x, y);
     } else {
-        // وقتی انرژی تموم میشه یه ویبره خطا میده
-        tg.HapticFeedback.notificationOccurred('error');
+        if (tg.HapticFeedback) {
+            tg.HapticFeedback.notificationOccurred('error');
+        }
     }
 });
 
-// پر شدن خودکار انرژی هر یک ثانیه
+// پر شدن خودکار انرژی (بازیابی ثانیه‌ای)
 setInterval(() => {
     if (energy < maxEnergy) {
         energy += energyRegenRate;
@@ -87,5 +111,5 @@ setInterval(() => {
     }
 }, 1000);
 
-// نمایش اولیه دیتا
+// لود اولیه دیتای دیتابیس محلی
 updateUI();
