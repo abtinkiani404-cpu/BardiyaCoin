@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
 
 :root {
-    --bg-dream: #0f0c20;
-    --panel-color: rgba(27, 23, 51, 0.7);
-    --cute-pink: #ff7597;
-    --cute-purple: #bb86fc;
-    --cute-gold: #ffd166;
-    --cute-cyan: #4cc9f0;
-    --text-light: #f8fafc;
+    --bg-dark-core: #040711;
+    --surface-glass: rgba(13, 20, 38, 0.65);
+    --crypto-gold: #f59e0b;
+    --neon-cyan: #06b6d4;
+    --text-pure: #f8fafc;
+    --text-muted: #475569;
+    --border-line: rgba(6, 182, 212, 0.15);
 }
 
 * {
@@ -21,13 +21,13 @@
 }
 
 body {
-    background-color: var(--bg-dream);
-    color: var(--text-light);
+    background-color: var(--bg-dark-core);
+    color: var(--text-pure);
     overflow: hidden;
     height: 100vh;
     display: flex;
     justify-content: center;
-    background: radial-gradient(circle at center, #1b153a 0%, #090615 100%);
+    background: radial-gradient(circle at top, #0b1528 0%, #02040a 100%);
 }
 
 .app-container {
@@ -37,310 +37,314 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-    padding: 16px;
+    padding: 14px;
 }
 
-/* هدر برندیگ و پروفایل گوگولی */
-.bot-brand-header {
-    background: var(--panel-color);
-    border: 2px solid rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border-radius: 24px;
-    padding: 10px 14px;
+/* هدر تکنو حرفه‌ای */
+.crypto-header {
+    background: var(--surface-glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-line);
+    border-radius: 16px;
+    padding: 12px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
-.brand-right {
+.brand-zone {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.brand-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-    border: 2px solid var(--cute-gold);
+.bot-logo {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    border: 1.5px solid var(--crypto-gold);
     object-fit: cover;
-    box-shadow: 0 0 10px rgba(255, 209, 102, 0.3);
 }
 
-.brand-text h2 {
-    font-size: 15px;
+.brand-titles h2 {
+    font-size: 14px;
     font-weight: 900;
-    color: var(--cute-gold);
+    color: var(--text-pure);
+    letter-spacing: 0.5px;
 }
 
-.brand-text .version {
-    font-size: 10px;
-    color: var(--cute-purple);
+.brand-titles .sub-crypto {
+    font-size: 9px;
+    color: var(--neon-cyan);
+    font-weight: 700;
     display: block;
 }
 
-/* کارت پروفایل واقعی کاربر تلگرام */
-.user-profile-card {
+/* پنل کاربری تلگرام */
+.tg-user-panel {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.3);
     padding: 6px 12px;
-    border-radius: 18px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.avatar-container {
+    width: 26px;
+    height: 26px;
+    position: relative;
 }
 
 #user-avatar {
-    width: 28px;
-    height: 28px;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    border: 1.5px solid var(--cute-pink);
     object-fit: cover;
+    border: 1px solid var(--neon-cyan);
+}
+
+.avatar-fallback {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0891b2, #0f172a);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    border: 1px solid var(--neon-cyan);
+    box-shadow: 0 0 8px rgba(6, 182, 212, 0.4);
 }
 
 #username {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    max-width: 80px;
+    max-width: 75px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #94a3b8;
 }
 
-/* تب‌ها */
-.main-content {
+/* محتوای تب‌ها */
+.viewport-content {
     flex: 1;
     position: relative;
     margin-top: 15px;
-    margin-bottom: 90px;
+    margin-bottom: 85px;
 }
 
-.game-tab {
+.app-tab {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     display: none;
     flex-direction: column;
 }
 
-.game-tab.active {
+.app-tab.active {
     display: flex;
 }
 
-/* بخش امتیاز فانتزی */
-.score-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 15px;
+/* نمایش مانده حساب */
+.balance-display {
+    text-align: center;
+    margin-top: 5px;
 }
 
-.cute-coin-shadow {
-    width: 45px;
-    height: 45px;
-    animation: floaty 3s ease-in-out infinite;
+.crypto-indicator {
+    font-size: 11px;
+    color: var(--crypto-gold);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
 }
 
 #score {
-    font-size: 3.5rem;
+    font-size: 3.4rem;
     font-weight: 900;
-    color: #fff;
-    text-shadow: 0 0 20px rgba(255, 117, 151, 0.3);
+    background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-@keyframes floaty {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-6px) rotate(5deg); }
-}
-
-.coin-playground {
+.click-nexus {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* انیمیشن ژله‌ای بی‌نظیر سکه بردیا */
-.jelly-coin {
+/* مدالیون تکنولوژیک و خفن بردیا */
+.tech-medallion {
     position: relative;
-    width: 230px;
-    height: 230px;
+    width: 235px;
+    height: 235px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ffd166 0%, #ff7597 100%);
-    padding: 8px;
-    box-shadow: 0 15px 45px rgba(255, 117, 151, 0.4), 
-                inset 0 -8px 15px rgba(0,0,0,0.2),
-                0 0 30px rgba(255, 209, 102, 0.2);
+    background: radial-gradient(circle, #111827 0%, #030712 100%);
+    border: 3px solid #1f2937;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 
+                inset 0 0 30px rgba(6, 182, 212, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    /* انیمیشن تپ لرزشی و ژله‌ای با منحنی اختصاصی */
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.5);
+    transition: transform 0.08s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* افکت فوق‌العاده نرم فشرده شدن حبابی */
-.jelly-coin:active {
-    transform: scale(0.88) scaleY(0.82) scaleX(1.04);
+.tech-medallion:active {
+    transform: scale(0.94);
 }
 
-.jelly-inner {
-    width: 100%;
-    height: 100%;
+.medallion-core {
+    width: 86%;
+    height: 86%;
     border-radius: 50%;
-    background: #0d0b18;
     overflow: hidden;
-    border: 4px solid #fff;
-    position: relative;
+    border: 3px solid var(--crypto-gold);
+    background-color: #020617;
     z-index: 5;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
 }
 
-.bardia-avatar-main {
+.medallion-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
 }
 
-.jelly-coin:active .bardia-avatar-main {
-    transform: scale(1.1);
-}
-
-/* نور افشانی ملایم دور سکه */
-.sparkle-glow {
+/* رینگ‌های لیزری چرخنده دوتایی */
+.laser-ring, .laser-ring-reverse {
     position: absolute;
-    top: -5%; left: -5%; width: 110%; height: 110%;
+    width: 105%; height: 105%;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,209,102,0.3) 0%, transparent 70%);
-    z-index: 1;
-    animation: pulseGlow 2s infinite ease-in-out;
+    border: 1.5px dashed rgba(6, 182, 212, 0.3);
+    pointer-events: none;
+    z-index: 2;
+}
+.laser-ring { animation: rotateClockwise 25s linear infinite; }
+.laser-ring-reverse {
+    width: 112%; height: 112%;
+    border: 1px double rgba(245, 158, 11, 0.2);
+    animation: rotateCounter 30s linear infinite;
 }
 
-@keyframes pulseGlow {
-    0%, 100% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.08); opacity: 0.9; }
-}
+@keyframes rotateClockwise { 100% { transform: rotate(360deg); } }
+@keyframes rotateCounter { 100% { transform: rotate(-360deg); } }
 
-/* عدد پاپ آپ صورتی با افکت چرخشی نرم */
+/* پاپ آپ عدد طلایی با فونت ارشد */
 .floating-number {
     position: absolute;
-    font-size: 2.5rem;
+    font-size: 2.4rem;
     font-weight: 900;
-    color: var(--cute-pink);
+    color: var(--crypto-gold);
     pointer-events: none;
-    animation: cutePopUp 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 4px 10px rgba(0,0,0,0.5);
+    animation: techFloat 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    text-shadow: 0 0 15px rgba(245, 158, 11, 0.6), 0 4px 10px #000;
 }
 
-@keyframes cutePopUp {
-    0% { opacity: 0; transform: translateY(20px) scale(0.5) rotate(-15deg); }
-    20% { opacity: 1; transform: translateY(0) scale(1.2) rotate(10deg); }
-    100% { opacity: 0; transform: translateY(-100px) scale(0.8) rotate(0deg); }
+@keyframes techFloat {
+    0% { opacity: 1; transform: translateY(0) scale(1.1); }
+    100% { opacity: 0; transform: translateY(-90px) scale(0.85); }
 }
 
-/* سیستم انرژی بهینه شده فانتزی */
-.cute-energy-box {
-    background: var(--panel-color);
-    border: 2px solid rgba(255, 255, 255, 0.04);
+/* بخش بهینه‌سازی شده هسته انرژی */
+.energy-matrix {
+    background: var(--surface-glass);
+    border: 1px solid var(--border-line);
     padding: 14px;
-    border-radius: 22px;
-    box-shadow: inset 0 2px 10px rgba(255,255,255,0.02);
+    border-radius: 14px;
 }
 
-.energy-info {
+.matrix-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
     font-weight: 700;
-    font-size: 13px;
+    font-size: 12px;
+    letter-spacing: 0.3px;
 }
+.text-cyan { color: var(--neon-cyan); }
 
-.text-pink { color: var(--cute-pink); }
-
-.bar-container {
-    width: 100%;
-    height: 14px;
-    background: #090615;
-    border-radius: 30px;
+.matrix-track {
+    width: 100%; height: 8px;
+    background: #090d16;
+    border-radius: 20px;
     overflow: hidden;
-    padding: 2px;
-    border: 1px solid rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.02);
 }
 
-.bar-fluid {
+.matrix-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--cute-pink), var(--cute-purple));
+    background: linear-gradient(90deg, #0284c7, var(--neon-cyan));
     width: 100%;
-    border-radius: 30px;
-    box-shadow: 0 0 12px var(--cute-pink);
-    transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 20px;
+    box-shadow: 0 0 12px rgba(6, 182, 212, 0.6);
+    transition: width 0.1s linear;
 }
 
-/* صفحات خوشگل جابجایی منو */
-.cute-placeholder {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
+/* نگه‌دارنده‌های منوهای جانبی */
+.pro-placeholder {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 25px;
 }
 
-.cute-placeholder img {
-    width: 75px;
-    height: 75px;
-    margin-bottom: 16px;
-    animation: floaty 4s infinite ease-in-out;
+.hex-icon {
+    width: 70px; height: 70px;
+    background: rgba(6, 182, 212, 0.04);
+    border: 1px solid var(--border-line);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; color: var(--neon-cyan); margin-bottom: 18px;
+    box-shadow: inset 0 0 15px rgba(6, 182, 212, 0.1);
 }
 
-.cute-placeholder h2 {
-    font-size: 18px;
-    color: var(--cute-gold);
-    margin-bottom: 8px;
+.pro-placeholder h3 {
+    font-size: 15px; font-weight: 900;
+    color: var(--crypto-gold); margin-bottom: 8px;
 }
 
-.cute-placeholder p {
-    font-size: 13px;
-    color: #8c85b1;
-    max-width: 250px;
-    line-height: 1.6;
+.pro-placeholder p {
+    font-size: 12px; color: #64748b;
+    max-width: 270px; line-height: 1.7;
 }
 
-/* نویگیشن بار حبابی و نرم پایینی */
-.bouncy-navbar {
+/* نویگیشن بار پایینی تاکتیکال */
+.tactical-navbar {
     position: absolute;
-    bottom: 16px; left: 16px; right: 16px;
-    background: rgba(20, 16, 41, 0.85);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 2px solid rgba(255, 255, 255, 0.05);
-    border-radius: 26px;
-    padding: 8px;
+    bottom: 12px; left: 12px; right: 12px;
+    background: rgba(7, 11, 22, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 6px;
     display: flex;
     justify-content: space-between;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
     z-index: 100;
 }
 
-.nav-btn {
+.nav-node {
     background: none; border: none; outline: none;
     display: flex; flex-direction: column; align-items: center;
-    gap: 4px; color: #7d75a9; cursor: pointer; flex: 1;
-    padding: 10px 0; border-radius: 20px;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    gap: 4px; color: #475569; cursor: pointer; flex: 1;
+    padding: 8px 0; border-radius: 12px;
+    transition: all 0.2s ease;
 }
 
-.nav-btn i { font-size: 20px; }
-.nav-btn span { font-size: 11px; font-weight: 700; }
+.nav-node i { font-size: 16px; }
+.nav-node span { font-size: 10px; font-weight: 700; }
 
-/* دکمه فعال نویگیشن با انیمیشن جهشی */
-.nav-btn.active {
-    color: var(--cute-cyan);
-    background: rgba(76, 201, 240, 0.1);
-    transform: translateY(-4px);
-    text-shadow: 0 0 10px rgba(76, 201, 240, 0.4);
+.nav-node.active {
+    color: var(--neon-cyan);
+    background: rgba(6, 182, 212, 0.06);
+    border-bottom: 1px solid var(--neon-cyan);
 }
