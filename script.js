@@ -1,115 +1,130 @@
-// اتصال به تلگرام
+// اتصال امن به API تلگرام وب‌اپ
 const tg = window.Telegram.WebApp;
 tg.expand(); 
 if (tg.ready) tg.ready();
 
-// مقادیر اولیه بازی
-let score = parseInt(localStorage.getItem('bardia_score')) || 0;
-let energy = parseInt(localStorage.getItem('bardia_energy')) || 1000;
-const maxEnergy = 1000;
-const energyRegenRate = 1; 
+// تنظیمات انرژی روی ۲۰۰ برای شروع و بهینه‌سازی سرعت بازی
+const maxEnergy = 200;
+const energyRegenRate = 1; // شارژ مجدد ۱ واحد در ثانیه
 
-// فراخوانی المان‌ها
+let score = parseInt(localStorage.getItem('bardia_cute_score')) || 0;
+let energy = parseInt(localStorage.getItem('bardia_cute_energy'));
+
+// اگر دفعه اول بود یا دیتایی نبود انرژی روی ۲۰۰ تنظیم بشه
+if (isNaN(energy) || energy === null) {
+    energy = maxEnergy;
+}
+
+// المان‌های DOM مینی‌اپ
 const scoreEl = document.getElementById('score');
 const energyTextEl = document.getElementById('energy-text');
 const energyFillEl = document.getElementById('energy-fill');
 const coinEl = document.getElementById('coin');
 const coinWrapper = document.getElementById('coin-wrapper');
 const usernameEl = document.getElementById('username');
+const userAvatarEl = document.getElementById('user-avatar');
 
-// هندل کردن نام کاربر تلگرام
+// دریافت و قرار دادن نام و عکس واقعی پروفایل از تلگرام
 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    usernameEl.innerText = tg.initDataUnsafe.user.first_name;
+    const user = tg.initDataUnsafe.user;
+    
+    // ست کردن اسم کوچک کاربر
+    usernameEl.innerText = user.first_name || "کاربر تلگرام";
+    
+    // دریافت هوشمند آواتار واقعی تلگرام
+    if (user.photo_url) {
+        userAvatarEl.src = user.photo_url;
+    }
 } else {
-    usernameEl.innerText = "کاربر تست تلگرام";
+    usernameEl.innerText = "طراح ربات (تست)";
 }
 
-// سیستم مدیریت تب‌ها (Navigation Bar)
-const navItems = document.querySelectorAll('.nav-item');
+// سیستم پیشرفته مدیریت تب‌های پایینی
+const navBtns = document.querySelectorAll('.nav-btn');
 const gameTabs = document.querySelectorAll('.game-tab');
 
-navItems.forEach(item => {
-    item.addEventListener('click', () => {
-        // حذف حالت فعال از دکمه‌ها و تب‌های قبلی
-        navItems.forEach(nav => nav.classList.remove('active'));
-        gameTabs.forEach(tab => tab.classList.remove('active'));
+navBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        navBtns.forEach(b => b.classList.remove('active'));
+        gameTabs.forEach(t => t.classList.remove('active'));
 
-        // فعال کردن دکمه فشرده شده
-        item.classList.add('active');
-        
-        // پیدا کردن و نمایش تب مربوطه
-        const targetTabId = item.getAttribute('data-tab');
-        document.getElementById(targetTabId).classList.add('active');
+        btn.classList.add('active');
+        const targetTab = btn.getAttribute('data-tab');
+        document.getElementById(targetTab).classList.add('active');
 
-        // ایجاد یک فیدبک لرزشی بسیار ریز موقع جابجایی منو
+        // ویبره حبابی و نرم تلگرام موقع جابجایی تب‌ها
         if(tg.HapticFeedback) {
             tg.HapticFeedback.impactOccurred('light');
         }
     });
 });
 
-// به‌روزرسانی ظاهر عددی مینی‌اپ
+// به‌روزرسانی رابط کاربری (UI) با محاسبات بهینه
 function updateUI() {
     scoreEl.innerText = score.toLocaleString();
-    energyTextEl.innerText = `${energy}/${maxEnergy}`;
+    energyTextEl.innerText = `${energy} / ${maxEnergy}`;
+    
+    // محاسبه درصد پیشرفت نوار انرژی
     const energyPercentage = (energy / maxEnergy) * 100;
     energyFillEl.style.width = `${energyPercentage}%`;
 }
 
-// انیمیشن تپ خوردن و عدد شناور
-function createFloatingNumber(x, y) {
-    const floatEl = document.createElement('div');
-    floatEl.classList.add('floating-number');
-    floatEl.innerText = '+1';
+// ساخت حباب شناور +1 پاستلی
+function createCuteNumber(x, y) {
+    const floatNumber = document.createElement('div');
+    floatNumber.classList.add('floating-number');
+    floatNumber.innerText = '+1';
     
-    floatEl.style.left = `${x - 20}px`;
-    floatEl.style.top = `${y - 40}px`;
+    floatNumber.style.left = `${x - 20}px`;
+    floatNumber.style.top = `${y - 40}px`;
     
-    coinWrapper.appendChild(floatEl);
+    coinWrapper.appendChild(floatNumber);
 
+    // حذف حباب از DOM پس از پایان انیمیشن برای بهینه‌سازی رم گوشی
     setTimeout(() => {
-        floatEl.remove();
-    }, 800);
+        floatNumber.remove();
+    }, 700);
 }
 
-// منطق ضربه زدن روی سکه
+// رویداد تپ روی صورت بردیا (با پشتیبانی از Pointer برای سرعت بالاتر)
 coinEl.addEventListener('pointerdown', (e) => {
     if (energy > 0) {
         score += 1;
         energy -= 1;
         
-        localStorage.setItem('bardia_score', score);
-        localStorage.setItem('bardia_energy', energy);
+        localStorage.setItem('bardia_cute_score', score);
+        localStorage.setItem('bardia_cute_energy', energy);
         
         updateUI();
         
-        // ویبره زدن واقعی گوشی در تلگرام
+        // ویبره جذاب ضربه‌ای میان‌رده تلگرام (حس لمس دکمه ژله‌ای)
         if (tg.HapticFeedback) {
             tg.HapticFeedback.impactOccurred('medium');
         }
 
-        // محاسبه دقیق مختصات نقطه تاچ
+        // موقعیت‌یابی دقیق تپ انگشت
         const rect = coinWrapper.getBoundingClientRect();
         const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const "y" = e.clientY - rect.top;
         
-        createFloatingNumber(x, y);
+        createCuteNumber(x, y);
     } else {
+        // ویبره اخطار در صورت تمام شدن انرژی
         if (tg.HapticFeedback) {
             tg.HapticFeedback.notificationOccurred('error');
         }
     }
 });
 
-// پر شدن خودکار انرژی (بازیابی ثانیه‌ای)
+// سیستم ريجنریت (شارژ خودکار ثانیه‌ای) انرژی بدون افت فریم
 setInterval(() => {
     if (energy < maxEnergy) {
         energy += energyRegenRate;
         if (energy > maxEnergy) energy = maxEnergy;
-        localStorage.setItem('bardia_energy', energy);
+        localStorage.setItem('bardia_cute_energy', energy);
         updateUI();
     }
 }, 1000);
 
-// لود اولیه دیتای دیتابیس محلی
+// لود نهایی در اولین اجرا
 updateUI();
