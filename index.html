@@ -3,69 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bardia Coin Core v4</title>
-    <!-- Telegram WebApp API -->
+    <title>Bardia Coin Core v5</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- صفحه قفل آنتی چیت -->
-    <div id="security-lock" class="cheat-overlay">
-        <div class="lock-box">
-            <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
-            <h2>سیستم امنیتی (Anti-Cheat)</h2>
-            <p id="cheat-reason">تقلب شناسایی شد.</p>
-            <button onclick="unlockSecurity()">متوجه شدم</button>
+    <div id="custom-modal" class="modal-overlay">
+        <div class="modal-box">
+            <i id="modal-icon" class="fa-solid fa-info-circle"></i>
+            <h2 id="modal-title">پیام سیستم</h2>
+            <p id="modal-desc">توضیحات</p>
+            <button id="modal-btn" onclick="closeModal()">تایید</button>
         </div>
     </div>
 
     <div class="app-container">
         
-        <!-- هدر کاربری سایبربانک -->
         <header class="crypto-header">
             <div class="brand-zone">
                 <img src="bardiya.png" class="bot-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
                 <div class="brand-titles">
-                    <h2>بردیا کوین</h2>
-                    <span class="sub-crypto">V4 | SECURE ENGINE</span>
+                    <h2>شبکه بردیا کوین</h2>
+                    <span class="sub-crypto">MAINNET ACTIVE | SECURE</span>
                 </div>
             </div>
-            
             <div class="tg-user-panel">
-                <div class="avatar-container">
-                    <img id="user-avatar" src="" alt="" style="display:none;">
-                    <div id="user-avatar-fallback" class="avatar-fallback">B</div>
-                </div>
+                <img id="user-avatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Avatar">
                 <span id="username">CONNECTING...</span>
             </div>
         </header>
 
-        <!-- نمایش محتوای صفحات -->
         <main class="viewport-content">
             
-            <!-- ۱. صفحه اصلی استخراج -->
             <section id="tab-home" class="app-tab active">
                 <div class="balance-display">
-                    <div class="crypto-indicator"><i class="fa-solid fa-layer-group"></i> موجودی توکن بردیا</div>
+                    <div class="crypto-indicator"><i class="fa-solid fa-coins"></i> موجودی توکن (B-COIN)</div>
                     <h1 id="score">0</h1>
                 </div>
 
                 <div class="click-nexus" id="coin-wrapper">
-                    <!-- سکه با انیمیشن لمسی دقیق -->
                     <div class="tech-medallion" id="coin">
                         <div class="medallion-core">
-                            <img src="bardiya.png" alt="Bardia Core" class="medallion-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
+                            <img src="bardiya.png" alt="B-Coin" class="medallion-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
                         </div>
-                        <div class="laser-ring"></div>
-                        <div class="laser-ring-reverse"></div>
+                        <div class="pulse-ring"></div>
                     </div>
                 </div>
 
                 <div class="energy-matrix">
                     <div class="matrix-info">
-                        <span><i class="fa-solid fa-bolt text-cyan"></i> انرژی هسته استخراج</span>
+                        <span><i class="fa-solid fa-bolt text-cyan"></i> توان هسته ماینینگ</span>
                         <span id="energy-text">200 / 200</span>
                     </div>
                     <div class="matrix-track">
@@ -74,98 +62,90 @@
                 </div>
             </section>
 
-            <!-- ۲. صفحه دستاوردها و جایزه روزانه -->
             <section id="tab-achievements" class="app-tab">
-                <div class="section-title">
-                    <i class="fa-solid fa-calendar-check"></i> پاداش روزانه
-                </div>
+                <div class="section-title"><i class="fa-solid fa-calendar-check"></i> قراردادهای هوشمند روزانه</div>
                 <div class="daily-rewards-grid" id="daily-grid"></div>
-                
-                <button id="claim-daily-btn" class="action-btn" disabled>
-                    <i class="fa-solid fa-clock"></i> در حال محاسبه...
-                </button>
+                <button id="claim-daily-btn" class="action-btn" disabled><i class="fa-solid fa-clock"></i> در حال بررسی شبکه...</button>
 
-                <div class="section-title" style="margin-top: 20px;">
-                    <i class="fa-solid fa-trophy"></i> مأموریت‌های فعال
-                </div>
+                <div class="section-title" style="margin-top: 20px;"><i class="fa-solid fa-shield-check"></i> دستاوردهای استخراج‌کننده</div>
                 <div class="achievements-list" id="achievements-container"></div>
             </section>
 
-            <!-- ۳. صفحه آمار فوق پیشرفته -->
             <section id="tab-stats" class="app-tab">
                 <div class="pro-card">
-                    <h3><i class="fa-solid fa-chart-pie text-cyan"></i> گزارش کامل پروفایل شما</h3>
-                    <div class="stat-row"><span>تعداد کل کلیک‌ها (تپ):</span><span id="stat-total-taps" class="stat-val">0</span></div>
-                    <div class="stat-row"><span>درآمد کل تاریخ بازی:</span><span id="stat-lifetime-score" class="stat-val">0</span></div>
-                    <div class="stat-row"><span>مجموع سطح ارتقاها:</span><span id="stat-total-upgrades" class="stat-val">0</span></div>
-                    <div class="stat-row"><span>تعداد ضربات خرکی (Crit):</span><span id="stat-crits" class="stat-val">0</span></div>
-                    <div class="stat-row"><span>اخطارهای تقلب:</span><span id="stat-warnings" class="stat-val text-red">0 / 3</span></div>
-                    <div class="stat-row"><span>وضعیت آنتی‌چیت:</span><span id="stat-cheat-status" class="text-green">ایمن</span></div>
+                    <h3><i class="fa-solid fa-chart-network text-cyan"></i> گزارش جامع نود شبکه</h3>
+                    <div class="stat-row"><span>تعداد کل هش‌ها (تپ):</span><span id="stat-total-taps" class="stat-val">0</span></div>
+                    <div class="stat-row"><span>توکن‌های استخراج شده کل:</span><span id="stat-lifetime-score" class="stat-val">0</span></div>
+                    <div class="stat-row"><span>درآمد ثبت‌شده توسط ربات آفلاین:</span><span id="stat-offline-earnings" class="stat-val text-green">0</span></div>
+                    <div class="stat-row"><span>تعداد بلوک‌های بحرانی (Crit):</span><span id="stat-crits" class="stat-val text-cyan">0</span></div>
+                    <div class="stat-row"><span>انرژی مصرف شده:</span><span id="stat-energy-spent" class="stat-val">0</span></div>
+                    <div class="stat-row"><span>سطح ماژول‌های فعال:</span><span id="stat-total-upgrades" class="stat-val">0</span></div>
+                    <div class="stat-row"><span>وضعیت امنیت شبکه:</span><span id="stat-cheat-status" class="text-green">تایید شده</span></div>
+                    <div class="stat-row"><span>اخطارهای امنیتی ثبت شده:</span><span id="stat-warnings" class="stat-val text-red">0 / 3</span></div>
                 </div>
             </section>
 
-            <!-- ۴. صفحه لیدربورد -->
             <section id="tab-leaderboard" class="app-tab">
-                <div class="pro-placeholder">
-                    <div class="hex-icon"><i class="fa-solid fa-ranking-star"></i></div>
-                    <h3>لیگ پادشاهان</h3>
-                    <p>جدول برترین‌های شبکه و رتبه‌بندی جهانی بعد از راه‌اندازی نسخه اصلی سرور آپدیت خواهد شد.</p>
+                <div class="section-title"><i class="fa-solid fa-ranking-star"></i> رتبه‌بندی جهانی نودها</div>
+                <div class="leaderboard-container">
+                    <div class="rank-item gold-rank">
+                        <div class="rank-num">1</div>
+                        <div class="rank-user">مستر ماینر</div>
+                        <div class="rank-score">15,430,200 <i class="fa-solid fa-coins"></i></div>
+                    </div>
+                    <div class="rank-item silver-rank">
+                        <div class="rank-num">2</div>
+                        <div class="rank-user">CryptoKing</div>
+                        <div class="rank-score">12,100,500 <i class="fa-solid fa-coins"></i></div>
+                    </div>
+                    <div class="rank-item bronze-rank">
+                        <div class="rank-num">3</div>
+                        <div class="rank-user">Ali_Dev</div>
+                        <div class="rank-score">9,850,000 <i class="fa-solid fa-coins"></i></div>
+                    </div>
+                    <div class="rank-item current-user-rank" style="margin-top: 15px; border-top: 1px dashed var(--neon-cyan);">
+                        <div class="rank-num">#</div>
+                        <div class="rank-user">شما (You)</div>
+                        <div class="rank-score" id="lb-user-score">0 <i class="fa-solid fa-coins"></i></div>
+                    </div>
                 </div>
             </section>
 
-            <!-- ۵. صفحه ارتقاها (خلاقانه) -->
             <section id="tab-upgrades" class="app-tab">
-                <div class="section-title"><i class="fa-solid fa-arrow-up-from-ground-water"></i> فروشگاه قدرت‌های ویژه</div>
+                <div class="section-title"><i class="fa-solid fa-server"></i> ارتقای زیرساخت ماینینگ</div>
                 <div class="upgrades-list" id="upgrades-container"></div>
             </section>
 
-            <!-- ۶. صفحه زمان لیست شدن (شمارش معکوس) -->
             <section id="tab-listing" class="app-tab">
                 <div class="listing-wrapper">
-                    <div class="rocket-icon"><i class="fa-solid fa-rocket animate-float"></i></div>
-                    <h3>آماده پرواز به ماه!</h3>
-                    <p class="listing-desc">زمان دقیق لیست شدن توکن بردیا در صرافی‌های بین‌المللی</p>
-                    
-                    <div class="countdown-container" id="countdown-container">
-                        <div class="time-box"><span id="cd-d">00</span><p>روز</p></div>
-                        <div class="colon">:</div>
-                        <div class="time-box"><span id="cd-h">00</span><p>ساعت</p></div>
-                        <div class="colon">:</div>
-                        <div class="time-box"><span id="cd-m">00</span><p>دقیقه</p></div>
-                        <div class="colon">:</div>
-                        <div class="time-box"><span id="cd-s">00</span><p>ثانیه</p></div>
+                    <div class="hologram-ring">
+                        <i class="fa-solid fa-globe animate-spin-slow"></i>
                     </div>
+                    <h3>اتصال به شبکه اصلی (Mainnet)</h3>
+                    <p class="listing-desc">زمان باقی‌مانده تا راه‌اندازی توکن بردیا در صرافی‌های بین‌المللی</p>
                     
-                    <div class="target-date-text">تاریخ: ۱۴ تیر ۱۴۰۵ (ساعت ۰۰:۰۰)</div>
+                    <div class="cyber-countdown" id="countdown-container">
+                        <div class="cyber-box"><span id="cd-d">00</span><label>روز</label></div><div class="cyber-sep">:</div>
+                        <div class="cyber-box"><span id="cd-h">00</span><label>ساعت</label></div><div class="cyber-sep">:</div>
+                        <div class="cyber-box"><span id="cd-m">00</span><label>دقیقه</label></div><div class="cyber-sep">:</div>
+                        <div class="cyber-box"><span id="cd-s">00</span><label>ثانیه</label></div>
+                    </div>
+                    <div class="target-date-text"><i class="fa-regular fa-calendar"></i> ۱۴ تیر ۱۴۰۵ - 00:00 UTC</div>
                 </div>
             </section>
 
         </main>
 
-        <!-- نویگیشن بار پایینی تاکتیکال -->
         <nav class="tactical-navbar">
-            <button class="nav-node active" data-tab="tab-home">
-                <i class="fa-solid fa-terminal"></i><span>استخراج</span>
-            </button>
-            <button class="nav-node" data-tab="tab-achievements">
-                <i class="fa-solid fa-award"></i><span>جوایز</span>
-            </button>
-            <button class="nav-node" data-tab="tab-stats">
-                <i class="fa-solid fa-chart-line"></i><span>آمار</span>
-            </button>
-            <button class="nav-node" data-tab="tab-leaderboard">
-                <i class="fa-solid fa-trophy"></i><span>لیگ</span>
-            </button>
-            <button class="nav-node" data-tab="tab-upgrades">
-                <i class="fa-solid fa-circle-arrow-up"></i><span>ارتقا</span>
-            </button>
-            <button class="nav-node" data-tab="tab-listing">
-                <i class="fa-solid fa-rocket"></i><span>لیستینگ</span>
-            </button>
+            <button class="nav-node active" data-tab="tab-home"><i class="fa-solid fa-microchip"></i><span>ماینینگ</span></button>
+            <button class="nav-node" data-tab="tab-achievements"><i class="fa-solid fa-file-contract"></i><span>قراردادها</span></button>
+            <button class="nav-node" data-tab="tab-stats"><i class="fa-solid fa-chart-line"></i><span>آمار</span></button>
+            <button class="nav-node" data-tab="tab-leaderboard"><i class="fa-solid fa-trophy"></i><span>رتبه‌بندی</span></button>
+            <button class="nav-node" data-tab="tab-upgrades"><i class="fa-solid fa-layer-group"></i><span>ارتقا</span></button>
+            <button class="nav-node" data-tab="tab-listing"><i class="fa-solid fa-satellite-dish"></i><span>لیستینگ</span></button>
         </nav>
 
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
