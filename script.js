@@ -1,21 +1,20 @@
-// اتصال امن به API تلگرام وب‌اپ
+// دریافت امن متغیر وب‌اپ تلگرام
 const tg = window.Telegram.WebApp;
 tg.expand(); 
 if (tg.ready) tg.ready();
 
-// تنظیمات انرژی روی ۲۰۰ برای شروع و بهینه‌سازی سرعت بازی
+// بهینه‌سازی دیتای انرژی روی ۲۰۰ واحد طبق درخواست شما
 const maxEnergy = 200;
-const energyRegenRate = 1; // شارژ مجدد ۱ واحد در ثانیه
+const energyRegenRate = 1; 
 
-let score = parseInt(localStorage.getItem('bardia_cute_score')) || 0;
-let energy = parseInt(localStorage.getItem('bardia_cute_energy'));
+let score = parseInt(localStorage.getItem('bardia_pro_score')) || 0;
+let energy = parseInt(localStorage.getItem('bardia_pro_energy'));
 
-// اگر دفعه اول بود یا دیتایی نبود انرژی روی ۲۰۰ تنظیم بشه
 if (isNaN(energy) || energy === null) {
     energy = maxEnergy;
 }
 
-// المان‌های DOM مینی‌اپ
+// رندر دام (DOM Elements)
 const scoreEl = document.getElementById('score');
 const energyTextEl = document.getElementById('energy-text');
 const energyFillEl = document.getElementById('energy-fill');
@@ -23,108 +22,109 @@ const coinEl = document.getElementById('coin');
 const coinWrapper = document.getElementById('coin-wrapper');
 const usernameEl = document.getElementById('username');
 const userAvatarEl = document.getElementById('user-avatar');
+const avatarFallbackEl = document.getElementById('user-avatar-fallback');
 
-// دریافت و قرار دادن نام و عکس واقعی پروفایل از تلگرام
+// منطق هوشمند بارگذاری هویت کاربر واقعی تلگرام
 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
     const user = tg.initDataUnsafe.user;
+    usernameEl.innerText = (user.first_name || "MEMBER").toUpperCase();
     
-    // ست کردن اسم کوچک کاربر
-    usernameEl.innerText = user.first_name || "کاربر تلگرام";
-    
-    // دریافت هوشمند آواتار واقعی تلگرام
     if (user.photo_url) {
         userAvatarEl.src = user.photo_url;
+        userAvatarEl.style.display = 'block';
+        avatarFallbackEl.style.display = 'none';
+    } else {
+        // ایجاد خودکار آواتار با کاراکتر اول نام کاربر در صورت عدم وجود آواتار تلگرامی
+        const initial = user.first_name ? user.first_name.charAt(0).toUpperCase() : "U";
+        avatarFallbackEl.innerText = initial;
     }
 } else {
-    usernameEl.innerText = "طراح ربات (تست)";
+    usernameEl.innerText = "DEV_MODE";
 }
 
-// سیستم پیشرفته مدیریت تب‌های پایینی
-const navBtns = document.querySelectorAll('.nav-btn');
-const gameTabs = document.querySelectorAll('.game-tab');
+// اصلاح سیستم سوئیچ منوها (Navigation Bar) - کاملاً عملیاتی
+const navNodes = document.querySelectorAll('.nav-node');
+const appTabs = document.querySelectorAll('.app-tab');
 
-navBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        navBtns.forEach(b => b.classList.remove('active'));
-        gameTabs.forEach(t => t.classList.remove('active'));
+navNodes.forEach(node => {
+    node.addEventListener('click', () => {
+        navNodes.forEach(n => n.classList.remove('active'));
+        appTabs.forEach(t => t.classList.remove('active'));
 
-        btn.classList.add('active');
-        const targetTab = btn.getAttribute('data-tab');
-        document.getElementById(targetTab).classList.add('active');
+        node.classList.add('active');
+        const targetTabId = node.getAttribute('data-tab');
+        document.getElementById(targetTabId).classList.add('active');
 
-        // ویبره حبابی و نرم تلگرام موقع جابجایی تب‌ها
+        // بازخورد لرزشی کلیک منو در تلگرام موبایل
         if(tg.HapticFeedback) {
             tg.HapticFeedback.impactOccurred('light');
         }
     });
 });
 
-// به‌روزرسانی رابط کاربری (UI) با محاسبات بهینه
+// به‌روزرسانی آنی و روان دیتای رابط کاربری
 function updateUI() {
     scoreEl.innerText = score.toLocaleString();
     energyTextEl.innerText = `${energy} / ${maxEnergy}`;
     
-    // محاسبه درصد پیشرفت نوار انرژی
     const energyPercentage = (energy / maxEnergy) * 100;
     energyFillEl.style.width = `${energyPercentage}%`;
 }
 
-// ساخت حباب شناور +1 پاستلی
-function createCuteNumber(x, y) {
+// ساخت انیمیشن پاپ‌آپ عدد استخراج طلایی (فیکس کامل متغیر y)
+function createTechNumber(x, y) {
     const floatNumber = document.createElement('div');
     floatNumber.classList.add('floating-number');
     floatNumber.innerText = '+1';
     
-    floatNumber.style.left = `${x - 20}px`;
-    floatNumber.style.top = `${y - 40}px`;
+    floatNumber.style.left = `${x - 15}px`;
+    floatNumber.style.top = `${y - 35}px`;
     
     coinWrapper.appendChild(floatNumber);
 
-    // حذف حباب از DOM پس از پایان انیمیشن برای بهینه‌سازی رم گوشی
     setTimeout(() => {
         floatNumber.remove();
-    }, 700);
+    }, 600);
 }
 
-// رویداد تپ روی صورت بردیا (با پشتیبانی از Pointer برای سرعت بالاتر)
+// رویداد تپ استخراج (Pointerdown برای پاسخ‌دهی صدم‌ثانیه‌ای بدون لنگ زدن)
 coinEl.addEventListener('pointerdown', (e) => {
     if (energy > 0) {
         score += 1;
         energy -= 1;
         
-        localStorage.setItem('bardia_cute_score', score);
-        localStorage.setItem('bardia_cute_energy', energy);
+        localStorage.setItem('bardia_pro_score', score);
+        localStorage.setItem('bardia_pro_energy', energy);
         
         updateUI();
         
-        // ویبره جذاب ضربه‌ای میان‌رده تلگرام (حس لمس دکمه ژله‌ای)
+        // بازخورد لرزشی ضربه میان‌رده تلگرام
         if (tg.HapticFeedback) {
             tg.HapticFeedback.impactOccurred('medium');
         }
 
-        // موقعیت‌یابی دقیق تپ انگشت
+        // مختصات‌گیری کاملاً مهندسی شده و بدون خطا
         const rect = coinWrapper.getBoundingClientRect();
         const x = e.clientX - rect.left;
-        const "y" = e.clientY - rect.top;
+        const y = e.clientY - rect.top; // فیکس اساسی اشکال تایپی قبلی
         
-        createCuteNumber(x, y);
+        createTechNumber(x, y);
     } else {
-        // ویبره اخطار در صورت تمام شدن انرژی
         if (tg.HapticFeedback) {
             tg.HapticFeedback.notificationOccurred('error');
         }
     }
 });
 
-// سیستم ريجنریت (شارژ خودکار ثانیه‌ای) انرژی بدون افت فریم
+// موتور ریکاوری و شارژ هسته انرژی (ثانیه‌ای ۱ واحد)
 setInterval(() => {
     if (energy < maxEnergy) {
         energy += energyRegenRate;
         if (energy > maxEnergy) energy = maxEnergy;
-        localStorage.setItem('bardia_cute_energy', energy);
+        localStorage.setItem('bardia_pro_energy', energy);
         updateUI();
     }
 }, 1000);
 
-// لود نهایی در اولین اجرا
+// اجرای لود اولیه بدون تاخیر
 updateUI();
