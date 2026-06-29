@@ -2,132 +2,113 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bardia Coin Premium</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+    <title>Bardia Coin Mobile</title>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
-    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
         
-        <header class="app-header">
+        <header class="mobile-header">
             <div class="brand">
                 <img src="bardiya.png" class="logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
-                <div>
+                <div class="brand-text">
                     <h2>بردیا کوین</h2>
-                    <span class="status-badge"><i class="fa-solid fa-circle-check"></i> سرور متصل</span>
+                    <span>مین‌نت فعال</span>
                 </div>
             </div>
-            <div class="user-profile" id="user-profile-btn">
-                <div id="avatar-container">
-                    </div>
+            <div class="user-pill">
                 <span id="username">بارگذاری...</span>
+                <div id="avatar-container"></div>
             </div>
         </header>
 
         <main class="main-content">
             
             <section id="tab-home" class="app-tab active">
-                <div class="score-section">
-                    <div class="score-title">موجودی (B-COIN)</div>
+                <div class="score-board">
+                    <span class="score-label">موجودی سکه</span>
                     <h1 id="score">0</h1>
                 </div>
 
-                <div class="coin-container" id="coin-wrapper">
-                    <div class="main-coin" id="coin" data-tilt data-tilt-glare data-tilt-max-glare="0.4" data-tilt-max="15" data-tilt-speed="400">
-                        <img src="bardiya.png" alt="Bardia" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
+                <div class="coin-zone" id="coin-wrapper">
+                    <div class="coin-circle" id="coin">
+                        <img src="bardiya.png" alt="Coin" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
                     </div>
                 </div>
 
-                <div class="energy-section">
-                    <div class="energy-labels">
-                        <span><i class="fa-solid fa-bolt text-warning"></i> انرژی استخراج</span>
+                <div class="energy-board">
+                    <div class="energy-text">
+                        <span><i class="fa-solid fa-bolt" style="color: #fbbf24;"></i> انرژی</span>
                         <span id="energy-text">200 / 200</span>
                     </div>
-                    <div class="energy-bar-bg">
-                        <div class="energy-bar-fill" id="energy-fill"></div>
+                    <div class="energy-track">
+                        <div class="energy-fill" id="energy-fill"></div>
                     </div>
                 </div>
             </section>
 
             <section id="tab-achievements" class="app-tab">
-                <h3 class="tab-title"><i class="fa-solid fa-calendar-check text-warning"></i> پاداش روزانه</h3>
+                <h3 class="section-title">پاداش روزانه</h3>
                 <div class="daily-grid" id="daily-grid"></div>
-                <button id="claim-daily-btn" class="main-btn" disabled>در حال بررسی...</button>
+                <button id="claim-daily-btn" class="btn-claim-large" disabled>در حال بررسی...</button>
 
-                <h3 class="tab-title" style="margin-top: 24px;"><i class="fa-solid fa-gift text-warning"></i> جوایز دستاوردها</h3>
-                <div class="list-container" id="achievements-container"></div>
+                <h3 class="section-title" style="margin-top: 20px;">ماموریت‌ها</h3>
+                <div class="compact-list" id="achievements-container"></div>
             </section>
 
             <section id="tab-upgrades" class="app-tab">
-                <h3 class="tab-title"><i class="fa-solid fa-store text-warning"></i> فروشگاه ابزار</h3>
-                <p class="tab-subtitle">با خرید این آیتم‌ها سرعت استخراج را چند برابر کنید.</p>
-                <div class="list-container" id="upgrades-container"></div>
+                <h3 class="section-title">فروشگاه قدرت</h3>
+                <div class="compact-list" id="upgrades-container"></div>
             </section>
 
             <section id="tab-stats" class="app-tab">
-                <h3 class="tab-title"><i class="fa-solid fa-chart-pie text-warning"></i> پروفایل و آمار شما</h3>
-                <div class="stats-card">
-                    <div class="stat-row"><span>تعداد کل کلیک‌ها:</span><span id="stat-total-taps">0</span></div>
-                    <div class="stat-row"><span>درآمد کل تاریخ بازی:</span><span id="stat-lifetime-score">0</span></div>
-                    <div class="stat-row"><span>استخراج شده توسط ربات:</span><span id="stat-offline-earnings" class="text-success">0</span></div>
-                    <div class="stat-row"><span>ضربات ۵ برابری (Crit):</span><span id="stat-crits">0</span></div>
-                    <div class="stat-row"><span>وضعیت آنتی‌چیت:</span><span id="stat-cheat-status" class="text-success">سالم</span></div>
-                    <div class="stat-row"><span>اخطارهای دریافتی:</span><span id="stat-warnings" class="text-danger">0 / 3</span></div>
+                <h3 class="section-title">وضعیت اکانت</h3>
+                <div class="stats-box">
+                    <div class="stat-line"><span>کل کلیک‌ها:</span><strong id="stat-total-taps">0</strong></div>
+                    <div class="stat-line"><span>کل سکه تاریخ:</span><strong id="stat-lifetime-score">0</strong></div>
+                    <div class="stat-line"><span>ماین ربات:</span><strong id="stat-offline-earnings" style="color:#10b981;">0</strong></div>
+                    <div class="stat-line"><span>ضربات ۵ برابری:</span><strong id="stat-crits">0</strong></div>
+                    <div class="stat-line"><span>وضعیت تقلب:</span><strong id="stat-cheat-status" style="color:#10b981;">سالم</strong></div>
                 </div>
-                <button class="reset-btn" onclick="devResetGame()">
-                    <i class="fa-solid fa-skull"></i> ریست کامل اکانت (ویژه توسعه‌دهنده)
+                
+                <button class="btn-reset" onclick="devResetGame()">
+                    <i class="fa-solid fa-rotate-right"></i> ریست دیتای بازی
                 </button>
             </section>
 
             <section id="tab-leaderboard" class="app-tab">
-                <div class="lb-header-box">
-                    <i class="fa-solid fa-crown text-warning" style="font-size: 30px; margin-bottom: 10px;"></i>
-                    <h3>لیگ برترین ماینرها</h3>
-                    <p>رتبه‌بندی جهانی بر اساس بیشترین سکه</p>
+                <div class="empty-state">
+                    <i class="fa-solid fa-server"></i>
+                    <h3>در حال توسعه...</h3>
+                    <p>اتصال به دیتابیس جهانی به زودی انجام می‌شود.</p>
                 </div>
-                
-                <div class="lb-columns">
-                    <span style="flex: 0.5;">رتبه</span>
-                    <span style="flex: 2;">کاربر</span>
-                    <span style="flex: 1.5; text-align: left;">موجودی</span>
-                </div>
-
-                <div class="lb-list" id="leaderboard-list">
-                    <div class="lb-loading">
-                        <i class="fa-solid fa-circle-notch fa-spin"></i>
-                        <p>در حال دریافت اطلاعات از سرور...</p>
-                    </div>
-                    </div>
             </section>
 
             <section id="tab-listing" class="app-tab">
-                <div class="listing-card">
-                    <div class="rocket-wrapper">
-                        <i class="fa-solid fa-space-shuttle launch-icon"></i>
-                    </div>
-                    <h2>تاریخ عرضه رسمی</h2>
-                    <p class="listing-info">۱۴ تیر ۱۴۰۵ - صرافی‌های بین‌المللی</p>
-                    
-                    <div class="countdown-modern">
-                        <div class="time-primary">
-                            <span id="cd-d">00</span>
-                            <label>روز باقی‌مانده</label>
+                <div class="listing-box">
+                    <div class="rocket-scene">
+                        <div class="rocket-body">
+                            <i class="fa-solid fa-space-shuttle"></i>
+                            <div class="rocket-fire"></div>
                         </div>
-                        <div class="time-secondary">
-                            <div class="time-box"><span id="cd-h">00</span><label>ساعت</label></div>
-                            <div class="time-box"><span id="cd-m">00</span><label>دقیقه</label></div>
-                            <div class="time-box"><span id="cd-s">00</span><label>ثانیه</label></div>
+                    </div>
+                    <h2>آماده پرتاب!</h2>
+                    <p class="listing-date">۱۴ تیر ۱۴۰۵</p>
+                    
+                    <div class="timer-grid">
+                        <div class="timer-box main-time">
+                            <span id="cd-d">00</span><label>روز</label>
+                        </div>
+                        <div class="timer-row">
+                            <div class="timer-box sub-time"><span id="cd-h">00</span><label>ساعت</label></div>
+                            <div class="timer-box sub-time"><span id="cd-m">00</span><label>دقیقه</label></div>
+                            <div class="timer-box sub-time"><span id="cd-s">00</span><label>ثانیه</label></div>
                         </div>
                     </div>
                 </div>
@@ -135,15 +116,19 @@
 
         </main>
 
-        <nav class="bottom-nav">
-            <button class="nav-item active" data-tab="tab-home"><i class="fa-solid fa-hand-pointer"></i><span>بازی</span></button>
-            <button class="nav-item" data-tab="tab-achievements">
-                <i class="fa-solid fa-gift"></i><span>جوایز</span>
-                <span class="nav-badge" id="badge-ach"></span> </button>
-            <button class="nav-item" data-tab="tab-upgrades"><i class="fa-solid fa-arrow-up-right-dots"></i><span>ارتقا</span></button>
-            <button class="nav-item" data-tab="tab-stats"><i class="fa-solid fa-chart-simple"></i><span>آمار</span></button>
-            <button class="nav-item" data-tab="tab-leaderboard"><i class="fa-solid fa-trophy"></i><span>برترین‌ها</span></button>
-            <button class="nav-item" data-tab="tab-listing"><i class="fa-solid fa-clock"></i><span>لیستینگ</span></button>
+        <nav class="mobile-nav">
+            <button class="nav-btn active" data-tab="tab-home"><i class="fa-solid fa-circle-dot"></i><span>بازی</span></button>
+            <button class="nav-btn has-badge" data-tab="tab-achievements">
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-gift"></i>
+                    <span class="red-badge" id="badge-ach"></span>
+                </div>
+                <span>جوایز</span>
+            </button>
+            <button class="nav-btn" data-tab="tab-upgrades"><i class="fa-solid fa-bolt"></i><span>ارتقا</span></button>
+            <button class="nav-btn" data-tab="tab-stats"><i class="fa-solid fa-chart-simple"></i><span>آمار</span></button>
+            <button class="nav-btn" data-tab="tab-leaderboard"><i class="fa-solid fa-trophy"></i><span>برترین‌ها</span></button>
+            <button class="nav-btn" data-tab="tab-listing"><i class="fa-solid fa-rocket"></i><span>عرضه</span></button>
         </nav>
     </div>
 
