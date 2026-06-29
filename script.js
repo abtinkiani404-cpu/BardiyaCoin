@@ -2,421 +2,378 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 if (tg.ready) tg.ready();
 
-// ----------------------------------------------------
-// Core State Management
-// ----------------------------------------------------
+// -------------------------
+// مدیریت اطلاعات بازی
+// -------------------------
 let state = {
-    score: parseInt(localStorage.getItem('b_score')) || 0,
-    lifetimeScore: parseInt(localStorage.getItem('b_lifetime')) || 0,
-    energy: parseInt(localStorage.getItem('b_energy')),
-    totalTaps: parseInt(localStorage.getItem('b_total_taps')) || 0,
-    energySpent: parseInt(localStorage.getItem('b_energy_spent')) || 0,
-    critsHit: parseInt(localStorage.getItem('b_crits')) || 0,
-    offlineEarningsTotal: parseInt(localStorage.getItem('b_offline_total')) || 0,
-    cheatWarnings: parseInt(localStorage.getItem('b_warnings')) || 0,
-    lastTime: parseInt(localStorage.getItem('b_last_time')) || Date.now(),
+    score: parseInt(localStorage.getItem('bc_score')) || 0,
+    lifetimeScore: parseInt(localStorage.getItem('bc_lifetime')) || 0,
+    energy: parseInt(localStorage.getItem('bc_energy')),
+    totalTaps: parseInt(localStorage.getItem('bc_total_taps')) || 0,
+    critsHit: parseInt(localStorage.getItem('bc_crits')) || 0,
+    offlineEarnings: parseInt(localStorage.getItem('bc_offline')) || 0,
+    warnings: parseInt(localStorage.getItem('bc_warnings')) || 0,
+    lastTime: parseInt(localStorage.getItem('bc_last_time')) || Date.now(),
     
-    // ارتقاهای مهندسی شده و سخت
-    upgrades: JSON.parse(localStorage.getItem('b_upgrades')) || {
-        multitap: 1,      // ماژول پردازش لمس
-        energyCap: 1,     // باتری گرافن
-        recharge: 1,      // رآکتور خنک‌کننده
-        critChance: 0,    // الگوریتم بلاک بحرانی
-        autobot: 0,       // نود پردازشگر آفلاین
-        blockchain: 0     // شتاب‌دهنده شبکه (درآمد پسیو در ثانیه)
+    // ارتقاها (اقتصاد سخت‌تر)
+    upgrades: JSON.parse(localStorage.getItem('bc_upgrades')) || {
+        multitap: 1,
+        energyCap: 1,
+        recharge: 1,
+        critChance: 0,
+        autobot: 0
     },
     
-    claimedAchievements: JSON.parse(localStorage.getItem('b_claimed_ach')) || [],
-    dailyStreak: parseInt(localStorage.getItem('b_daily_streak')) || 0,
-    lastDailyClaim: parseInt(localStorage.getItem('b_last_daily')) || 0
+    claimedAchs: JSON.parse(localStorage.getItem('bc_claimed_ach')) || [],
+    dailyStreak: parseInt(localStorage.getItem('bc_daily_streak')) || 0,
+    lastDailyClaim: parseInt(localStorage.getItem('bc_last_daily')) || 0
 };
 
 if (isNaN(state.energy) || state.energy === null) state.energy = 200;
 
-// کانفیگ اقتصادی (بازی سخت‌تر شده)
+// کانفیگ 
 const config = { 
     baseMaxEnergy: 200, 
     energyPerLevel: 100, 
     baseRechargeRate: 1, 
-    dailyRewards: [200, 500, 1000, 2500, 5000, 10000, 25000] 
+    dailyRewards: [100, 500, 1000, 2000, 5000, 10000, 50000] 
 };
 
-// ----------------------------------------------------
-// Upgrade & Achievement Specs
-// ----------------------------------------------------
-const upgradeSpecs = {
-    multitap: { name: "ماژول پردازش لمس", desc: "افزایش استخراج توکن در هر کلیک", baseCost: 500, mult: 1.8 },
-    energyCap: { name: "باتری گرافنی", desc: "افزایش سقف ظرفیت انرژی (+۱۰۰)", baseCost: 800, mult: 1.6 },
-    recharge: { name: "رآکتور خنک‌کننده", desc: "افزایش سرعت بازیابی توان در ثانیه", baseCost: 1500, mult: 2.0 },
-    critChance: { name: "الگوریتم بلاک بحرانی", desc: "شانس ۵٪ برای ضریب درآمد ۵ برابری کلیک", baseCost: 5000, mult: 3.0 },
-    autobot: { name: "نود پردازشگر آفلاین", desc: "استخراج اتوماتیک شبکه هنگام خروج (تا ۳ ساعت)", baseCost: 15000, mult: 4.0 },
-    blockchain: { name: "شتاب‌دهنده بلاک‌چین", desc: "تولید توکن ثابت در هر ثانیه به صورت خودکار", baseCost: 25000, mult: 2.5 }
+// اطلاعات فروشگاه
+const upgradesData = {
+    multitap: { name: "ضربه قوی‌تر", desc: "سکه بیشتر با هر کلیک", baseCost: 1000, mult: 2.2 },
+    energyCap: { name: "مخزن بزرگ‌تر", desc: "افزایش ظرفیت انرژی", baseCost: 1500, mult: 2.0 },
+    recharge: { name: "شارژ سریع‌تر", desc: "پر شدن سریع‌تر انرژی", baseCost: 3000, mult: 2.5 },
+    critChance: { name: "ضربه شانس", desc: "احتمال ۵ برابر شدن سکه", baseCost: 10000, mult: 3.5 },
+    autobot: { name: "ربات استخراج", desc: "جمع‌آوری خودکار موقع خروج", baseCost: 50000, mult: 5.0 }
 };
 
+// تولید بیش از ۵۰ جایزه به صورت خودکار بر اساس پیشرفت
 function generateAchievements() {
-    return [
-        { id: 't_1', title: "کارآموز ماینینگ", desc: "ثبت بیش از ۱,۰۰۰ کلیک", type: 'taps', target: 1000, reward: 2000 },
-        { id: 't_2', title: "اپراتور شبکه", desc: "ثبت بیش از ۱۰,۰۰۰ کلیک", type: 'taps', target: 10000, reward: 15000 },
-        { id: 't_3', title: "خدای انگشتان", desc: "ثبت بیش از ۱۰۰,۰۰۰ کلیک", type: 'taps', target: 100000, reward: 100000 },
-        
-        { id: 's_1', title: "اولین سرمایه", desc: "کسب مجموع ۱۰,۰۰۰ توکن", type: 'score', target: 10000, reward: 5000 },
-        { id: 's_2', title: "نهنگ خرد", desc: "کسب مجموع ۱۰۰,۰۰۰ توکن", type: 'score', target: 100000, reward: 25000 },
-        { id: 's_3', title: "رئیس بلاک‌چین", desc: "کسب مجموع ۱,۰۰۰,۰۰۰ توکن", type: 'score', target: 1000000, reward: 200000 },
-        
-        { id: 'c_1', title: "خوش‌شانس", desc: "ثبت ۵۰ بلاک بحرانی (Crit)", type: 'crits', target: 50, reward: 10000 }
-    ];
+    let list = [];
+    const tapGoals = [100, 500, 1000, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000];
+    tapGoals.forEach((g, i) => list.push({ id: `t_${i}`, title: `انگشت خستگی‌ناپذیر ${i+1}`, desc: `${g.toLocaleString()} بار کلیک کن`, target: g, type: 'taps', reward: g * 2 }));
+    
+    const scoreGoals = [5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000];
+    scoreGoals.forEach((g, i) => list.push({ id: `s_${i}`, title: `سرمایه‌دار بزرگ ${i+1}`, desc: `${g.toLocaleString()} سکه در کل جمع کن`, target: g, type: 'score', reward: Math.floor(g * 0.1) }));
+    
+    for(let i=2; i<=11; i++) list.push({ id: `m_${i}`, title: `مشت آهنین لول ${i}`, desc: `ضربه قوی‌تر رو به لول ${i} برسون`, target: i, type: 'multitap', reward: i * 1500 });
+    for(let i=2; i<=11; i++) list.push({ id: `e_${i}`, title: `باتری اتمی لول ${i}`, desc: `مخزن رو به لول ${i} برسون`, target: i, type: 'energyCap', reward: i * 2000 });
+    for(let i=2; i<=11; i++) list.push({ id: `r_${i}`, title: `سرعت نور لول ${i}`, desc: `شارژ سریع رو به لول ${i} برسون`, target: i, type: 'recharge', reward: i * 3000 });
+    
+    return list;
 }
-const globalAchievements = generateAchievements();
+const allAchievements = generateAchievements();
 
-// ----------------------------------------------------
-// UI Elements & Helpers
-// ----------------------------------------------------
-const scoreEl = document.getElementById('score');
-const energyTextEl = document.getElementById('energy-text');
-const energyFillEl = document.getElementById('energy-fill');
-const coinEl = document.getElementById('coin');
-const coinWrapper = document.getElementById('coin-wrapper');
-let antiCheat = { tapTimes: [], lastCoords: {x:0, y:0}, sameCoordsCount: 0, locked: false };
-
-if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    document.getElementById('username').innerText = (tg.initDataUnsafe.user.first_name).toUpperCase();
-    if (tg.initDataUnsafe.user.photo_url) document.getElementById('user-avatar').src = tg.initDataUnsafe.user.photo_url;
-}
-
-function getMaxEnergy() { return config.baseMaxEnergy + ((state.upgrades.energyCap - 1) * config.energyPerLevel); }
-function getCoinsPerTap() { return state.upgrades.multitap; }
-function getRechargeRate() { return config.baseRechargeRate + (state.upgrades.recharge - 1); }
-function getPassiveIncome() { return state.upgrades.blockchain * 2; } // هر لول ۲ سکه در ثانیه
-function triggerHaptic(type) { if(tg.HapticFeedback) { if(type==='tap') tg.HapticFeedback.impactOccurred('medium'); if(type==='success') tg.HapticFeedback.notificationOccurred('success'); if(type==='error') tg.HapticFeedback.notificationOccurred('error'); } }
-
+// -------------------------
+// توابع کمکی
+// -------------------------
 function saveState() {
     state.lastTime = Date.now();
-    localStorage.setItem('b_score', state.score);
-    localStorage.setItem('b_lifetime', state.lifetimeScore);
-    localStorage.setItem('b_energy', state.energy);
-    localStorage.setItem('b_total_taps', state.totalTaps);
-    localStorage.setItem('b_energy_spent', state.energySpent);
-    localStorage.setItem('b_crits', state.critsHit);
-    localStorage.setItem('b_offline_total', state.offlineEarningsTotal);
-    localStorage.setItem('b_warnings', state.cheatWarnings);
-    localStorage.setItem('b_last_time', state.lastTime);
-    localStorage.setItem('b_upgrades', JSON.stringify(state.upgrades));
-    localStorage.setItem('b_claimed_ach', JSON.stringify(state.claimedAchievements));
-    localStorage.setItem('b_daily_streak', state.dailyStreak);
-    localStorage.setItem('b_last_daily', state.lastDailyClaim);
+    localStorage.setItem('bc_score', state.score);
+    localStorage.setItem('bc_lifetime', state.lifetimeScore);
+    localStorage.setItem('bc_energy', state.energy);
+    localStorage.setItem('bc_total_taps', state.totalTaps);
+    localStorage.setItem('bc_crits', state.critsHit);
+    localStorage.setItem('bc_offline', state.offlineEarnings);
+    localStorage.setItem('bc_warnings', state.warnings);
+    localStorage.setItem('bc_last_time', state.lastTime);
+    localStorage.setItem('bc_upgrades', JSON.stringify(state.upgrades));
+    localStorage.setItem('bc_claimed_ach', JSON.stringify(state.claimedAchs));
+    localStorage.setItem('bc_daily_streak', state.dailyStreak);
+    localStorage.setItem('bc_last_daily', state.lastDailyClaim);
 }
 
-// ----------------------------------------------------
-// Custom In-App Modals
-// ----------------------------------------------------
-let modalCallback = null;
-function showModal(title, desc, iconClass, btnClass, callback = null) {
+function showModal(title, desc) {
     document.getElementById('modal-title').innerText = title;
     document.getElementById('modal-desc').innerText = desc;
-    document.getElementById('modal-icon').className = `fa-solid ${iconClass}`;
-    const btn = document.getElementById('modal-btn');
-    btn.className = btnClass;
-    modalCallback = callback;
     document.getElementById('custom-modal').classList.add('show');
-    triggerHaptic(btnClass.includes('danger') ? 'error' : 'success');
+    if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 }
+window.closeModal = () => document.getElementById('custom-modal').classList.remove('show');
 
-window.closeModal = function() {
-    document.getElementById('custom-modal').classList.remove('show');
-    if (modalCallback) modalCallback();
-}
-
-// ----------------------------------------------------
-// Anti-Cheat Engine (3 Strikes = Reset)
-// ----------------------------------------------------
-function handleCheatDetection(reason) {
-    state.cheatWarnings++;
-    saveState();
-    antiCheat.locked = true;
-    
-    if (state.cheatWarnings >= 3) {
-        // ریست کامل دیتابیس
-        localStorage.clear();
-        showModal("حساب مسدود شد", "به دلیل ۳ بار تخلف امنیتی (استفاده از اتوکلیکر یا تغییر ساعت)، تمام اطلاعات، سکه‌ها و ارتقاهای شما برای همیشه پاک شد.", "fa-ban", "modal-btn-danger", () => {
-            window.location.reload();
-        });
-    } else {
-        showModal(`اخطار امنیتی (${state.cheatWarnings}/3)`, `${reason}\nدر صورت رسیدن اخطارها به عدد ۳، حساب شما کاملا ریست خواهد شد!`, "fa-triangle-exclamation", "modal-btn-danger", () => {
-            antiCheat.locked = false;
-            antiCheat.tapTimes = [];
-            updateStatsPage();
-        });
+function triggerConfetti() {
+    if (typeof confetti !== "undefined") {
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#fbbf24', '#f59e0b', '#ffffff'] });
     }
 }
 
-function verifyClick(e) {
-    if (!e.isTrusted) { handleCheatDetection("ربات نرم‌افزاری تزریق کلیک شناسایی شد."); return false; }
-    
+// -------------------------
+// آنتی چیت ساده و روان
+// -------------------------
+let tapHistory = [];
+function isCheat(e) {
+    if (!e.isTrusted) return true;
     const now = Date.now();
-    antiCheat.tapTimes.push(now);
-    antiCheat.tapTimes = antiCheat.tapTimes.filter(t => now - t < 1000);
-    // حداکثر ۲۵ کلیک در ثانیه مجاز است
-    if (antiCheat.tapTimes.length > 25) {
-        handleCheatDetection("سرعت کلیک غیرطبیعی شبکه را مختل کرد.");
-        antiCheat.tapTimes = [];
-        return false;
+    tapHistory.push(now);
+    tapHistory = tapHistory.filter(t => now - t < 1000);
+    // اگر کسی بالای ۳۵ کلیک در ثانیه کرد یعنی اتوکلیکره
+    if (tapHistory.length > 35) {
+        tapHistory = [];
+        return true;
     }
-    
-    // بررسی کلیک دقیق روی یک پیکسل
-    if (antiCheat.lastCoords.x === e.clientX && antiCheat.lastCoords.y === e.clientY) {
-        antiCheat.sameCoordsCount++;
-        if (antiCheat.sameCoordsCount > 15) {
-            handleCheatDetection("لمس مکرر و رباتیک یک پیکسل ثابت ردیابی شد.");
-            antiCheat.sameCoordsCount = 0;
-            return false;
-        }
-    } else { antiCheat.sameCoordsCount = 0; }
-    
-    antiCheat.lastCoords = { x: e.clientX, y: e.clientY };
-    return true;
+    return false;
 }
 
-// ----------------------------------------------------
-// Main Mining Logic
-// ----------------------------------------------------
+// -------------------------
+// منطق اصلی بازی (Main)
+// -------------------------
 function updateUI() {
-    const maxE = getMaxEnergy();
+    const maxE = config.baseMaxEnergy + ((state.upgrades.energyCap - 1) * config.energyPerLevel);
     if (state.energy > maxE) state.energy = maxE;
-    scoreEl.innerText = state.score.toLocaleString();
-    energyTextEl.innerText = `${state.energy} / ${maxE}`;
-    energyFillEl.style.width = `${(state.energy / maxE) * 100}%`;
-    document.getElementById('lb-user-score').innerHTML = `${state.score.toLocaleString()} <i class="fa-solid fa-coins"></i>`;
+    
+    document.getElementById('score').innerText = state.score.toLocaleString();
+    document.getElementById('energy-text').innerText = `${Math.floor(state.energy)} / ${maxE}`;
+    document.getElementById('energy-fill').style.width = `${(state.energy / maxE) * 100}%`;
+    
+    if (state.score > state.lifetimeScore) state.lifetimeScore = state.score;
 }
+
+// حل مشکل مختصات انیمیشن +1
+const coinEl = document.getElementById('coin');
+const coinWrapper = document.getElementById('coin-wrapper');
 
 coinEl.addEventListener('pointerdown', (e) => {
-    if (antiCheat.locked) return;
-    if (state.energy <= 0) { triggerHaptic('error'); return; }
-    if (!verifyClick(e)) return;
+    if (state.energy < 1) return;
     
-    let clickPower = getCoinsPerTap();
+    if (isCheat(e)) {
+        state.warnings++;
+        if(state.warnings >= 3) {
+            localStorage.clear();
+            alert("اکانت شما به دلیل استفاده از نرم‌افزارهای تقلب پاک شد.");
+            window.location.reload();
+        } else {
+            showModal("اخطار تقلب!", `کلیک غیرطبیعی شناسایی شد. (اخطار ${state.warnings} از 3)`);
+        }
+        return;
+    }
+    
+    let power = state.upgrades.multitap;
     let isCrit = false;
     if (state.upgrades.critChance > 0 && Math.random() < 0.05) {
-        clickPower *= 5;
+        power *= 5;
         isCrit = true;
         state.critsHit++;
     }
     
-    state.score += clickPower;
-    state.lifetimeScore += clickPower;
+    state.score += power;
+    state.lifetimeScore += power;
     state.energy -= 1;
     state.totalTaps += 1;
-    state.energySpent += 1;
     
-    triggerHaptic('tap');
+    if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
     
-    const rect = coinEl.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    // فیکس دقیق نقطه لمس نسبت به نگهدارنده
+    const rect = coinWrapper.getBoundingClientRect();
+    let cx = e.clientX; let cy = e.clientY;
+    if (cx === undefined && e.touches) { cx = e.touches[0].clientX; cy = e.touches[0].clientY; }
+    
+    const x = cx - rect.left;
+    const y = cy - rect.top;
     
     const pop = document.createElement('div');
-    pop.classList.add('floating-number');
-    pop.innerText = `+${clickPower}`;
-    if(isCrit) { pop.style.color = 'var(--neon-cyan)'; pop.style.fontSize = '2.6rem'; pop.innerText += "!"; }
-    pop.style.left = `${x - 10}px`; pop.style.top = `${y - 20}px`;
+    pop.className = 'floating-number';
+    pop.innerText = `+${power}`;
+    if (isCrit) { pop.style.color = '#fbbf24'; pop.style.fontSize = '3.5rem'; pop.innerText += "!"; }
+    pop.style.left = `${x - 20}px`;
+    pop.style.top = `${y - 40}px`;
     coinWrapper.appendChild(pop);
-    setTimeout(() => pop.remove(), 500);
+    setTimeout(() => pop.remove(), 600);
     
     updateUI();
 });
 
-// ----------------------------------------------------
-// Navigation & Sections Rendering
-// ----------------------------------------------------
-const navNodes = document.querySelectorAll('.nav-node');
-const appTabs = document.querySelectorAll('.app-tab');
-
-navNodes.forEach(node => {
-    node.addEventListener('click', () => {
-        if (antiCheat.locked) return;
-        navNodes.forEach(n => n.classList.remove('active'));
-        appTabs.forEach(t => t.classList.remove('active'));
-        node.classList.add('active');
-        const target = node.getAttribute('data-tab');
+// -------------------------
+// نویگیشن و صفحات
+// -------------------------
+document.querySelectorAll('.nav-item, .nav-node').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-item, .nav-node').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.app-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.getAttribute('data-tab');
         document.getElementById(target).classList.add('active');
-        triggerHaptic('tap');
         
-        if(target === 'tab-upgrades') renderUpgrades();
-        if(target === 'tab-achievements') { renderDaily(); renderAchievements(); }
-        if(target === 'tab-stats') updateStatsPage();
+        if (target === 'tab-upgrades') renderUpgrades();
+        if (target === 'tab-achievements') { renderDaily(); renderAchievements(); }
+        if (target === 'tab-stats') {
+            document.getElementById('stat-total-taps').innerText = state.totalTaps.toLocaleString();
+            document.getElementById('stat-lifetime-score').innerText = state.lifetimeScore.toLocaleString();
+            document.getElementById('stat-offline-earnings').innerText = state.offlineEarnings.toLocaleString();
+            document.getElementById('stat-crits').innerText = state.critsHit.toLocaleString();
+            if (state.warnings > 0) {
+                const sEl = document.getElementById('stat-cheat-status');
+                sEl.innerText = "مشکوک به تقلب"; sEl.style.color = "#ef4444";
+            }
+        }
     });
 });
 
-function updateStatsPage() {
-    document.getElementById('stat-total-taps').innerText = state.totalTaps.toLocaleString();
-    document.getElementById('stat-lifetime-score').innerText = state.lifetimeScore.toLocaleString();
-    document.getElementById('stat-offline-earnings').innerText = state.offlineEarningsTotal.toLocaleString();
-    document.getElementById('stat-crits').innerText = state.critsHit.toLocaleString();
-    document.getElementById('stat-energy-spent').innerText = state.energySpent.toLocaleString();
-    document.getElementById('stat-total-upgrades').innerText = Object.values(state.upgrades).reduce((a,b)=>a+b, 0) - Object.keys(state.upgrades).length;
-    
-    const wEl = document.getElementById('stat-warnings');
-    wEl.innerText = `${state.cheatWarnings} / 3`;
-    const sEl = document.getElementById('stat-cheat-status');
-    if(state.cheatWarnings === 0) { sEl.innerText = "ایمن و پاک"; sEl.className = "text-green"; wEl.className = "stat-val text-green"; }
-    else if(state.cheatWarnings === 1) { sEl.innerText = "مشکوک"; sEl.className = "text-gold"; wEl.className = "stat-val text-gold"; wEl.style.color = "#fbbf24"; }
-    else { sEl.innerText = "خطر تعلیق اکانت!"; sEl.className = "text-red"; wEl.className = "stat-val text-red"; }
-}
-
+// -------------------------
+// فروشگاه
+// -------------------------
 function renderUpgrades() {
-    const container = document.getElementById('upgrades-container');
-    container.innerHTML = '';
-    Object.keys(upgradeSpecs).forEach(key => {
-        const spec = upgradeSpecs[key];
-        const lvl = state.upgrades[key];
+    const cont = document.getElementById('upgrades-container');
+    cont.innerHTML = '';
+    Object.keys(upgradesData).forEach(k => {
+        const spec = upgradesData[k];
+        const lvl = state.upgrades[k];
         const cost = Math.floor(spec.baseCost * Math.pow(spec.mult, lvl - 1));
-        const maxReached = (key === 'critChance' || key === 'autobot') && lvl >= 1;
+        const maxed = (k === 'critChance' || k === 'autobot') && lvl >= 1;
         
-        container.innerHTML += `
-            <div class="pro-card-item">
-                <div class="card-info">
-                    <h4>${spec.name} <span class="lvl-badge">LVL ${lvl}</span></h4>
+        const canBuy = state.score >= cost && !maxed;
+        
+        cont.innerHTML += `
+            <div class="list-item">
+                <div class="item-info">
+                    <h4>${spec.name} <span class="lvl-badge">سطح ${lvl}</span></h4>
                     <p>${spec.desc}</p>
-                    <div class="card-price">${maxReached ? 'حداکثر ارتقا' : `<i class="fa-solid fa-coins"></i> ${cost.toLocaleString()}`}</div>
+                    <div class="item-price">${maxed ? 'حداکثر' : cost.toLocaleString() + ' سکه'}</div>
                 </div>
-                <button class="btn-action" ${state.score < cost || maxReached ? 'disabled' : ''} onclick="buyUpgrade('${key}', ${cost})">
-                    ${maxReached ? '<i class="fa-solid fa-lock"></i> MAX' : 'ارتقا'}
+                <button class="action-btn ${canBuy ? 'can-buy' : ''}" ${!canBuy ? 'disabled' : ''} onclick="buyUp('${k}', ${cost})">
+                    ${maxed ? 'کامل' : 'خرید'}
                 </button>
             </div>
         `;
     });
 }
 
-window.buyUpgrade = function(key, cost) {
+window.buyUp = function(k, cost) {
     if (state.score >= cost) {
         state.score -= cost;
-        state.upgrades[key]++;
-        triggerHaptic('success');
+        state.upgrades[k]++;
+        if(tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
         saveState(); updateUI(); renderUpgrades();
     }
 }
 
+// -------------------------
+// جوایز روزانه و پیشرفت
+// -------------------------
 function renderDaily() {
     const grid = document.getElementById('daily-grid');
-    const claimBtn = document.getElementById('claim-daily-btn');
+    const btn = document.getElementById('claim-daily-btn');
     grid.innerHTML = '';
     const now = Date.now();
-    const canClaim = now - state.lastDailyClaim >= 86400000; // 24h
-    if (now - state.lastDailyClaim > 172800000 && state.lastDailyClaim !== 0) state.dailyStreak = 0; // Reset after 48h
+    const canClaim = now - state.lastDailyClaim >= 86400000;
+    if (now - state.lastDailyClaim > 172800000 && state.lastDailyClaim !== 0) state.dailyStreak = 0;
     
     for (let i = 0; i < 7; i++) {
-        let cls = 'daily-day-box';
+        let cls = 'day-box';
         if (i < state.dailyStreak) cls += ' claimed';
         if (i === state.dailyStreak && canClaim) cls += ' active';
-        grid.innerHTML += `<div class="${cls}"><div>روز ${i+1}</div><div style="color:var(--gold);font-weight:bold;margin-top:4px;">+${config.dailyRewards[i]}</div></div>`;
+        grid.innerHTML += `<div class="${cls}"><span>روز ${i+1}</span><strong>+${config.dailyRewards[i]}</strong></div>`;
     }
     
     if (canClaim) {
-        claimBtn.disabled = false; claimBtn.className = 'action-btn-wide ready';
-        claimBtn.innerHTML = `<i class="fa-solid fa-gift"></i> دریافت قرارداد روزانه`;
-        claimBtn.onclick = () => {
-            const rew = config.dailyRewards[state.dailyStreak];
-            state.score += rew; state.lifetimeScore += rew;
+        btn.disabled = false; btn.className = 'main-btn ready';
+        btn.innerText = "دریافت جایزه امروز";
+        btn.onclick = () => {
+            const r = config.dailyRewards[state.dailyStreak];
+            state.score += r; state.lifetimeScore += r;
             state.lastDailyClaim = Date.now();
             state.dailyStreak = (state.dailyStreak + 1) % 7;
-            triggerHaptic('success'); saveState(); updateUI(); renderDaily();
-            showModal("قرارداد تایید شد", `مبلغ ${rew.toLocaleString()} توکن به حساب شما واریز شد. فردا مجددا سر بزنید!`, "fa-check-circle", "modal-btn-primary");
+            triggerConfetti();
+            saveState(); updateUI(); renderDaily();
         };
     } else {
-        claimBtn.disabled = true; claimBtn.className = 'action-btn-wide';
-        updateTimerLoop(); // Start visual timer update
+        btn.disabled = true; btn.className = 'main-btn';
+        const tl = (state.lastDailyClaim + 86400000) - now;
+        const h = Math.floor(tl / 3600000).toString().padStart(2,'0');
+        const m = Math.floor((tl % 3600000) / 60000).toString().padStart(2,'0');
+        btn.innerText = `دریافت بعدی: ${h}:${m}`;
     }
 }
 
 function renderAchievements() {
-    const container = document.getElementById('achievements-container');
-    container.innerHTML = '';
-    let rendered = false;
+    const cont = document.getElementById('achievements-container');
+    cont.innerHTML = '';
+    let found = false;
     
-    globalAchievements.forEach(ach => {
-        if (state.claimedAchievements.includes(ach.id)) return;
-        rendered = true;
-        let progress = 0;
-        if(ach.type === 'taps') progress = state.totalTaps;
-        if(ach.type === 'score') progress = state.lifetimeScore;
-        if(ach.type === 'crits') progress = state.critsHit;
+    allAchievements.forEach(ach => {
+        if (state.claimedAchs.includes(ach.id)) return;
+        found = true;
+        let prog = 0;
+        if(ach.type === 'taps') prog = state.totalTaps;
+        if(ach.type === 'score') prog = state.lifetimeScore;
+        if(['multitap','energyCap','recharge'].includes(ach.type)) prog = state.upgrades[ach.type];
         
-        const isDone = progress >= ach.target;
-        const icon = isDone ? `<div class="ach-icon ready"><i class="fa-solid fa-gift"></i></div>` : `<div class="ach-icon locked"><i class="fa-solid fa-lock"></i></div>`;
-        
-        container.innerHTML += `
-            <div class="pro-card-item">
-                ${icon}
-                <div class="card-info" style="margin-right:10px;">
-                    <h4 style="font-size:12px;">${ach.title}</h4>
+        const done = prog >= ach.target;
+        cont.innerHTML += `
+            <div class="list-item">
+                <div class="item-info">
+                    <h4>${ach.title}</h4>
                     <p>${ach.desc}</p>
-                    <div class="card-price" style="color:var(--success);">+${ach.reward.toLocaleString()} B-COIN</div>
+                    <div class="item-price" style="color:#10b981;">+${ach.reward.toLocaleString()} سکه جایزه</div>
                 </div>
-                <button class="btn-action" ${!isDone ? 'disabled' : ''} onclick="claimAch('${ach.id}', ${ach.reward})">
-                    ${isDone ? 'دریافت' : `${Math.min(100, Math.floor((progress/ach.target)*100))}%`}
+                <button class="action-btn ${done ? 'can-buy' : ''}" ${!done ? 'disabled' : ''} onclick="claimAch('${ach.id}', ${ach.reward})">
+                    ${done ? 'دریافت' : Math.floor(Math.min(100, (prog/ach.target)*100)) + '%'}
                 </button>
             </div>
         `;
     });
     
-    if(!rendered) container.innerHTML = `<div style="text-align:center; padding: 20px; color:var(--success);"><i class="fa-solid fa-check-double" style="font-size:30px; margin-bottom:10px;"></i><p>همه قراردادها تکمیل شده است!</p></div>`;
+    if (!found) cont.innerHTML = '<p style="text-align:center; color:#10b981; padding:20px;">همه جوایز را دریافت کرده‌اید!</p>';
 }
 
 window.claimAch = function(id, reward) {
     state.score += reward; state.lifetimeScore += reward;
-    state.claimedAchievements.push(id);
-    triggerHaptic('success'); saveState(); updateUI(); renderAchievements();
+    state.claimedAchs.push(id);
+    triggerConfetti();
+    saveState(); updateUI(); renderAchievements();
 }
 
-// ----------------------------------------------------
-// System Loops (Offline, Timer, Listing)
-// ----------------------------------------------------
-function processOfflineMining() {
+// -------------------------
+// سیستم‌های خودکار
+// -------------------------
+function processOffline() {
     const now = Date.now();
     if (state.upgrades.autobot > 0 && state.lastTime) {
         const elap = Math.floor((now - state.lastTime) / 1000);
         if (elap > 60) {
-            const capped = Math.min(elap, 3 * 60 * 60); // Max 3 hours
-            const earned = Math.floor(capped * 0.5 * getCoinsPerTap());
+            const capped = Math.min(elap, 3 * 3600); // ۳ ساعت
+            const earned = Math.floor(capped * 0.5 * state.upgrades.multitap);
             if (earned > 0) {
-                state.score += earned; state.lifetimeScore += earned; state.offlineEarningsTotal += earned;
-                showModal("گزارش نود آفلاین", `ربات پردازشگر آفلاین شما در زمان عدم حضور، موفق به استخراج ${earned.toLocaleString()} توکن شد!`, "fa-robot", "modal-btn-primary");
+                state.score += earned; state.lifetimeScore += earned; state.offlineEarnings += earned;
+                showModal("خوش برگشتی!", `ربات استخراج وقتی نبودی ${earned.toLocaleString()} سکه برات جمع کرد.`);
             }
         }
     }
 }
 
-function updateTimerLoop() {
-    const btn = document.getElementById('claim-daily-btn');
-    if(!btn || !btn.disabled) return;
-    const tl = (state.lastDailyClaim + 86400000) - Date.now();
-    if (tl <= 0) { renderDaily(); return; }
-    const h = Math.floor(tl / 3600000).toString().padStart(2,'0');
-    const m = Math.floor((tl % 3600000) / 60000).toString().padStart(2,'0');
-    const s = Math.floor((tl % 60000) / 1000).toString().padStart(2,'0');
-    btn.innerHTML = `<i class="fa-solid fa-clock"></i> در دسترس تا: ${h}:${m}:${s}`;
+// دکمه مخفی ریست بازی برای تست
+window.devResetGame = function() {
+    if(confirm("آیا مطمئن هستید که می‌خواهید کل اطلاعات بازی را پاک کنید؟")) {
+        localStorage.clear();
+        window.location.reload();
+    }
 }
 
-// حلقه ۱ ثانیه ای
+// حلقه بازی
 setInterval(() => {
-    if (antiCheat.locked) return;
-    const now = Date.now();
-    
-    // محافظت در برابر دستکاری زمان گوشی
-    if (now < state.lastTime - 2000) { handleCheatDetection("سیستم متوجه تغییر زمان دستگاه شما شد."); return; }
-    
     // شارژ انرژی
-    const maxE = getMaxEnergy();
-    if (state.energy < maxE) { state.energy += getRechargeRate(); if(state.energy > maxE) state.energy = maxE; updateUI(); }
+    const maxE = config.baseMaxEnergy + ((state.upgrades.energyCap - 1) * config.energyPerLevel);
+    if (state.energy < maxE) { 
+        state.energy += config.baseRechargeRate + (state.upgrades.recharge - 1); 
+        if(state.energy > maxE) state.energy = maxE; 
+        updateUI(); 
+    }
     
-    // درآمد پسیو (بلاک‌چین)
-    const passive = getPassiveIncome();
-    if (passive > 0) { state.score += passive; state.lifetimeScore += passive; updateUI(); }
-    
-    updateTimerLoop();
-    
-    // شمارش معکوس لیستینگ (۱۴ تیر ۱۴۰۵ = 5 Jul 2026)
-    const targetDate = new Date("2026-07-05T00:00:00Z").getTime();
-    const diff = targetDate - now;
+    // تایمر جایزه روزانه
+    const btn = document.getElementById('claim-daily-btn');
+    if (btn && btn.disabled) {
+        const tl = (state.lastDailyClaim + 86400000) - Date.now();
+        if (tl <= 0) renderDaily();
+        else {
+            const h = Math.floor(tl / 3600000).toString().padStart(2,'0');
+            const m = Math.floor((tl % 3600000) / 60000).toString().padStart(2,'0');
+            btn.innerText = `دریافت بعدی: ${h}:${m}`;
+        }
+    }
+
+    // تایمر لیستینگ
+    const target = new Date("2026-07-05T00:00:00Z").getTime();
+    const diff = target - Date.now();
     if (diff > 0) {
         document.getElementById('cd-d').innerText = Math.floor(diff / 86400000).toString().padStart(2,'0');
         document.getElementById('cd-h').innerText = Math.floor((diff % 86400000) / 3600000).toString().padStart(2,'0');
@@ -427,5 +384,6 @@ setInterval(() => {
     saveState();
 }, 1000);
 
-processOfflineMining();
+processOffline();
 updateUI();
+if(tg.initDataUnsafe && tg.initDataUnsafe.user) document.getElementById('username').innerText = tg.initDataUnsafe.user.first_name;
