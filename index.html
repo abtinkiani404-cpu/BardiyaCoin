@@ -3,29 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Bardia Coin Core v3</title>
+    <title>Bardia Coin Core v4</title>
+    <!-- Telegram WebApp API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- صفحه قفل آنتی چیت -->
     <div id="security-lock" class="cheat-overlay">
         <div class="lock-box">
             <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
-            <h2>سیستم امنیتی فعال شد</h2>
-            <p id="cheat-reason">فعالیت غیرمجاز یا تغییر زمان شبکه شناسایی شد.</p>
-            <button onclick="location.reload()">تلاش مجدد</button>
+            <h2>سیستم امنیتی (Anti-Cheat)</h2>
+            <p id="cheat-reason">تقلب شناسایی شد.</p>
+            <button onclick="unlockSecurity()">متوجه شدم</button>
         </div>
     </div>
 
     <div class="app-container">
         
+        <!-- هدر کاربری سایبربانک -->
         <header class="crypto-header">
             <div class="brand-zone">
                 <img src="bardiya.png" class="bot-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
                 <div class="brand-titles">
                     <h2>بردیا کوین</h2>
-                    <span class="sub-crypto">SECURITY SECURE</span>
+                    <span class="sub-crypto">V4 | SECURE ENGINE</span>
                 </div>
             </div>
             
@@ -38,8 +42,10 @@
             </div>
         </header>
 
+        <!-- نمایش محتوای صفحات -->
         <main class="viewport-content">
             
+            <!-- ۱. صفحه اصلی استخراج -->
             <section id="tab-home" class="app-tab active">
                 <div class="balance-display">
                     <div class="crypto-indicator"><i class="fa-solid fa-layer-group"></i> موجودی توکن بردیا</div>
@@ -47,6 +53,7 @@
                 </div>
 
                 <div class="click-nexus" id="coin-wrapper">
+                    <!-- سکه با انیمیشن لمسی دقیق -->
                     <div class="tech-medallion" id="coin">
                         <div class="medallion-core">
                             <img src="bardiya.png" alt="Bardia Core" class="medallion-img" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2922/2922506.png'">
@@ -67,53 +74,75 @@
                 </div>
             </section>
 
+            <!-- ۲. صفحه دستاوردها و جایزه روزانه -->
             <section id="tab-achievements" class="app-tab">
                 <div class="section-title">
-                    <i class="fa-solid fa-calendar-check"></i> تقویم پاداش روزانه
+                    <i class="fa-solid fa-calendar-check"></i> پاداش روزانه
                 </div>
                 <div class="daily-rewards-grid" id="daily-grid"></div>
-                <button id="claim-daily-btn" class="action-btn">دریافت پاداش امروز</button>
+                
+                <button id="claim-daily-btn" class="action-btn" disabled>
+                    <i class="fa-solid fa-clock"></i> در حال محاسبه...
+                </button>
 
                 <div class="section-title" style="margin-top: 20px;">
-                    <i class="fa-solid fa-trophy"></i> دستاوردهای شبکه (بیش از ۵۰ مأموریت)
+                    <i class="fa-solid fa-trophy"></i> مأموریت‌های فعال
                 </div>
                 <div class="achievements-list" id="achievements-container"></div>
             </section>
 
+            <!-- ۳. صفحه آمار فوق پیشرفته -->
             <section id="tab-stats" class="app-tab">
                 <div class="pro-card">
-                    <h3><i class="fa-solid fa-chart-bar text-cyan"></i> گزارش دقیق عملیات استخراج</h3>
-                    <div class="stat-row"><span>کل تپ‌های ثبت شده:</span><span id="stat-total-taps">0</span></div>
-                    <div class="stat-row"><span>تعداد ارتقاها:</span><span id="stat-total-upgrades">0</span></div>
-                    <div class="stat-row"><span>بالاترین رکورد موجودی:</span><span id="stat-highest-score">0</span></div>
-                    <div class="stat-row"><span>وضعیت آنتی‌چیت:</span><span class="text-green">ایمن و فعال</span></div>
+                    <h3><i class="fa-solid fa-chart-pie text-cyan"></i> گزارش کامل پروفایل شما</h3>
+                    <div class="stat-row"><span>تعداد کل کلیک‌ها (تپ):</span><span id="stat-total-taps" class="stat-val">0</span></div>
+                    <div class="stat-row"><span>درآمد کل تاریخ بازی:</span><span id="stat-lifetime-score" class="stat-val">0</span></div>
+                    <div class="stat-row"><span>مجموع سطح ارتقاها:</span><span id="stat-total-upgrades" class="stat-val">0</span></div>
+                    <div class="stat-row"><span>تعداد ضربات خرکی (Crit):</span><span id="stat-crits" class="stat-val">0</span></div>
+                    <div class="stat-row"><span>اخطارهای تقلب:</span><span id="stat-warnings" class="stat-val text-red">0 / 3</span></div>
+                    <div class="stat-row"><span>وضعیت آنتی‌چیت:</span><span id="stat-cheat-status" class="text-green">ایمن</span></div>
                 </div>
             </section>
 
+            <!-- ۴. صفحه لیدربورد -->
             <section id="tab-leaderboard" class="app-tab">
                 <div class="pro-placeholder">
                     <div class="hex-icon"><i class="fa-solid fa-ranking-star"></i></div>
-                    <h3>لیگ استخراج‌کنندگان</h3>
+                    <h3>لیگ پادشاهان</h3>
                     <p>جدول برترین‌های شبکه و رتبه‌بندی جهانی بعد از راه‌اندازی نسخه اصلی سرور آپدیت خواهد شد.</p>
                 </div>
             </section>
 
+            <!-- ۵. صفحه ارتقاها (خلاقانه) -->
             <section id="tab-upgrades" class="app-tab">
-                <div class="section-title"><i class="fa-solid fa-arrow-up-from-ground-water"></i> ماژول‌های تقویت قدرت استخراج</div>
-                <div class="upgrades-list" id="upgrades-container">
-                    </div>
+                <div class="section-title"><i class="fa-solid fa-arrow-up-from-ground-water"></i> فروشگاه قدرت‌های ویژه</div>
+                <div class="upgrades-list" id="upgrades-container"></div>
             </section>
 
+            <!-- ۶. صفحه زمان لیست شدن (شمارش معکوس) -->
             <section id="tab-listing" class="app-tab">
-                <div class="pro-placeholder">
-                    <div class="hex-icon"><i class="fa-solid fa-rocket"></i></div>
-                    <h3>زمان لیستینگ بزرگ توکن</h3>
-                    <p>شمارش معکوس نهایی برای اتصال توکن بردیا به کیف‌پول‌های شبکه TON و صرافی‌های معتبر رمزآزاد جهانی.</p>
+                <div class="listing-wrapper">
+                    <div class="rocket-icon"><i class="fa-solid fa-rocket animate-float"></i></div>
+                    <h3>آماده پرواز به ماه!</h3>
+                    <p class="listing-desc">زمان دقیق لیست شدن توکن بردیا در صرافی‌های بین‌المللی</p>
+                    
+                    <div class="countdown-container" id="countdown-container">
+                        <div class="time-box"><span id="cd-d">00</span><p>روز</p></div>
+                        <div class="colon">:</div>
+                        <div class="time-box"><span id="cd-h">00</span><p>ساعت</p></div>
+                        <div class="colon">:</div>
+                        <div class="time-box"><span id="cd-m">00</span><p>دقیقه</p></div>
+                        <div class="colon">:</div>
+                        <div class="time-box"><span id="cd-s">00</span><p>ثانیه</p></div>
+                    </div>
+                    
+                    <div class="target-date-text">تاریخ: ۱۴ تیر ۱۴۰۵ (ساعت ۰۰:۰۰)</div>
                 </div>
             </section>
 
         </main>
 
+        <!-- نویگیشن بار پایینی تاکتیکال -->
         <nav class="tactical-navbar">
             <button class="nav-node active" data-tab="tab-home">
                 <i class="fa-solid fa-terminal"></i><span>استخراج</span>
@@ -131,7 +160,7 @@
                 <i class="fa-solid fa-circle-arrow-up"></i><span>ارتقا</span>
             </button>
             <button class="nav-node" data-tab="tab-listing">
-                <i class="fa-solid fa-circle-nodes"></i><span>لیستینگ</span>
+                <i class="fa-solid fa-rocket"></i><span>لیستینگ</span>
             </button>
         </nav>
 
