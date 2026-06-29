@@ -2,16 +2,10 @@ const tg = window.Telegram.WebApp;
 tg.expand();
 if (tg.ready) tg.ready();
 
-// تنظیمات سراسری SweetAlert برای جلوگیری از به هم ریختن صفحه
-const swalConfig = Swal.mixin({
-    heightAuto: false,
-    scrollbarPadding: false,
-    confirmButtonText: 'متوجه شدم'
-});
+// تنظیمات SweetAlert برای فیکس شدن اسکرول صفحه
+const swalConfig = Swal.mixin({ heightAuto: false, scrollbarPadding: false, confirmButtonText: 'تایید' });
 
-// -------------------------
-// مدیریت استیت
-// -------------------------
+// دیتابیس لوکال
 let state = {
     score: parseInt(localStorage.getItem('bc_score')) || 0,
     lifetimeScore: parseInt(localStorage.getItem('bc_lifetime')) || 0,
@@ -32,33 +26,32 @@ let state = {
 
 if (isNaN(state.energy) || state.energy === null) state.energy = 200;
 
-// اقتصاد سخت‌تر
 const config = { baseMaxEnergy: 200, energyPerLevel: 100, baseRechargeRate: 3, dailyRewards: [500, 1000, 2500, 5000, 10000, 25000, 50000] };
 
 const upgradesData = {
     multitap: { name: "قدرت کلیک", desc: "افزایش سکه با هر تپ", baseCost: 1500, mult: 2.5 },
     energyCap: { name: "مخزن انرژی", desc: "ظرفیت انرژی بیشتر", baseCost: 2000, mult: 2.2 },
     recharge: { name: "شارژ سریع", desc: "پر شدن سریع‌تر", baseCost: 4000, mult: 2.8 },
-    critChance: { name: "ضربه جادویی", desc: "۵ برابر شدن سکه", baseCost: 15000, mult: 4.0 },
+    critChance: { name: "ضربه جادویی", desc: "احتمال ۵ برابر شدن سکه", baseCost: 15000, mult: 4.0 },
     autobot: { name: "ربات آفلاین", desc: "استخراج موقع خروج", baseCost: 100000, mult: 5.0 }
 };
 
-// تولید ۵۰ مأموریت
+// تولید مأموریت‌ها
 function generateAchievements() {
     let list = [];
-    const tapGoals = [100, 500, 1000, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000];
-    tapGoals.forEach((g, i) => list.push({ id: `t_${i}`, title: `انگشت فولادی ${i+1}`, desc: `${g.toLocaleString()} بار ضربه بزن`, target: g, type: 'taps', reward: g * 2 }));
+    const tapGoals = [100, 500, 1000, 5000, 10000, 25000, 50000, 100000];
+    tapGoals.forEach((g, i) => list.push({ id: `t_${i}`, title: `تپ‌زن حرفه‌ای ${i+1}`, desc: `${g.toLocaleString()} بار ضربه بزن`, target: g, type: 'taps', reward: g * 2 }));
     
-    const scoreGoals = [5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000, 50000000, 100000000];
+    const scoreGoals = [5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000];
     scoreGoals.forEach((g, i) => list.push({ id: `s_${i}`, title: `میلیونر ${i+1}`, desc: `${g.toLocaleString()} سکه جمع کن`, target: g, type: 'score', reward: Math.floor(g * 0.1) }));
     
-    for(let i=2; i<=11; i++) list.push({ id: `m_${i}`, title: `قدرت لول ${i}`, desc: `قدرت کلیک رو به ${i} برسون`, target: i, type: 'multitap', reward: i * 2000 });
-    for(let i=2; i<=11; i++) list.push({ id: `e_${i}`, title: `مخزن لول ${i}`, desc: `مخزن انرژی رو به ${i} برسون`, target: i, type: 'energyCap', reward: i * 3000 });
-    for(let i=2; i<=11; i++) list.push({ id: `r_${i}`, title: `سرعت لول ${i}`, desc: `شارژ سریع رو به ${i} برسون`, target: i, type: 'recharge', reward: i * 4000 });
+    for(let i=2; i<=10; i++) list.push({ id: `m_${i}`, title: `قدرت لول ${i}`, desc: `قدرت کلیک رو به ${i} برسون`, target: i, type: 'multitap', reward: i * 2000 });
+    for(let i=2; i<=10; i++) list.push({ id: `e_${i}`, title: `مخزن لول ${i}`, desc: `مخزن انرژی رو به ${i} برسون`, target: i, type: 'energyCap', reward: i * 3000 });
     return list;
 }
 const allAchievements = generateAchievements();
 
+// لود پروفایل
 function loadProfile() {
     const user = tg.initDataUnsafe?.user;
     const cont = document.getElementById('avatar-container');
@@ -67,8 +60,8 @@ function loadProfile() {
         if (user.photo_url) cont.innerHTML = `<img src="${user.photo_url}" class="avatar-img">`;
         else cont.innerHTML = `<div class="avatar-text">${user.first_name.charAt(0)}</div>`;
     } else {
-        document.getElementById('username').innerText = "شما";
-        cont.innerHTML = `<div class="avatar-text">U</div>`;
+        document.getElementById('username').innerText = "توسعه دهنده";
+        cont.innerHTML = `<div class="avatar-text">D</div>`;
     }
 }
 loadProfile();
@@ -90,17 +83,14 @@ function saveState() {
 }
 
 // -------------------------
-// آنتی چیت و فیزیک موبایل
+// آنتی چیت 
 // -------------------------
 let tapTimes = [];
 function verifyTouch(count) {
     const now = Date.now();
     for(let i=0; i<count; i++) tapTimes.push(now);
     tapTimes = tapTimes.filter(t => now - t < 1000);
-    // مجاز بودن تا ۳۰ لمس همزمان در ثانیه با چند انگشت (طبیعی برای بازی‌های تپ)
-    if (tapTimes.length > 30) {
-        tapTimes = []; return false;
-    }
+    if (tapTimes.length > 30) { tapTimes = []; return false; }
     return true;
 }
 
@@ -111,37 +101,34 @@ function updateUI() {
     document.getElementById('score').innerText = state.score.toLocaleString();
     document.getElementById('energy-text').innerText = `${Math.floor(state.energy)} / ${maxE}`;
     document.getElementById('energy-fill').style.width = `${(state.energy / maxE) * 100}%`;
-    
     if (state.score > state.lifetimeScore) state.lifetimeScore = state.score;
 }
 
 const coinEl = document.getElementById('coin');
 const coinWrapper = document.getElementById('coin-wrapper');
 
-// استفاده از touchstart برای پشتیبانی از مولتی‌تاچ در موبایل
 coinEl.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // جلوگیری از کلیک‌های دوتایی و زوم مرورگر
+    e.preventDefault(); 
     if (state.energy < 1) return;
     
     const touches = e.changedTouches;
-    const touchCount = touches.length;
+    const count = touches.length;
     
-    if (!verifyTouch(touchCount)) {
+    if (!verifyTouch(count)) {
         state.warnings++;
         if(state.warnings >= 3) {
             localStorage.clear();
-            swalConfig.fire({title:'حذف اکانت', text:'به دلیل تقلب حساب شما مسدود شد.', icon:'error'}).then(()=>location.reload());
+            swalConfig.fire({title:'حذف اکانت', text:'تقلب تشخیص داده شد.', icon:'error'}).then(()=>location.reload());
         } else {
             swalConfig.fire({title:'اخطار', text:'سرعت لمس غیرطبیعی است!', icon:'warning'});
         }
         return;
     }
     
-    // افکت ویژوال فشرده شدن
     coinEl.classList.add('touch-active');
     setTimeout(() => coinEl.classList.remove('touch-active'), 50);
 
-    for (let i = 0; i < touchCount; i++) {
+    for (let i = 0; i < count; i++) {
         if (state.energy < 1) break;
         
         let power = state.upgrades.multitap;
@@ -151,7 +138,6 @@ coinEl.addEventListener('touchstart', (e) => {
         state.score += power; state.lifetimeScore += power;
         state.energy -= 1; state.totalTaps += 1;
         
-        // استخراج مختصات لمس
         const rect = coinWrapper.getBoundingClientRect();
         const x = touches[i].clientX - rect.left;
         const y = touches[i].clientY - rect.top;
@@ -171,7 +157,7 @@ coinEl.addEventListener('touchstart', (e) => {
 }, {passive: false});
 
 // -------------------------
-// سیستم نوتیفیکیشن
+// نوتیفیکیشن
 // -------------------------
 function checkBadges() {
     let show = false;
@@ -190,7 +176,7 @@ function checkBadges() {
 }
 
 // -------------------------
-// نویگیشن
+// نویگیشن شناور
 // -------------------------
 document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -199,6 +185,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.add('active');
         const target = btn.getAttribute('data-tab');
         document.getElementById(target).classList.add('active');
+        if(tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         
         if (target === 'tab-upgrades') renderUpgrades();
         if (target === 'tab-achievements') { renderDaily(); renderAchievements(); }
@@ -209,7 +196,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
             document.getElementById('stat-crits').innerText = state.critsHit.toLocaleString();
             const sEl = document.getElementById('stat-cheat-status');
             if (state.warnings === 0) { sEl.innerText = "سالم"; sEl.style.color = "#10b981"; }
-            else { sEl.innerText = "اخطار"; sEl.style.color = "#ef4444"; }
+            else { sEl.innerText = "اخطار تقلب"; sEl.style.color = "#ef4444"; }
         }
     });
 });
@@ -234,7 +221,7 @@ function renderUpgrades() {
                     <p>${spec.desc}</p>
                 </div>
                 <button class="btn-action ${canBuy ? 'btn-buy' : 'locked'}" ${!canBuy ? 'disabled' : ''} onclick="buyUp('${k}', ${cost})">
-                    ${maxed ? 'کامل' : `خرید <span class="price">${cost.toLocaleString()} <i class="fa-solid fa-coins"></i></span>`}
+                    ${maxed ? 'کامل' : `خرید <span class="price">${cost.toLocaleString()}</span>`}
                 </button>
             </div>
         `;
@@ -301,7 +288,7 @@ function renderAchievements() {
                     <p>${ach.desc}</p>
                 </div>
                 <button class="btn-action ${done ? 'btn-claim' : 'locked'}" ${!done ? 'disabled' : ''} onclick="claimAch('${ach.id}', ${ach.reward})">
-                    ${done ? `دریافت <span class="reward">+${ach.reward.toLocaleString()} <i class="fa-solid fa-coins"></i></span>` : `${Math.min(100, Math.floor((prog/ach.target)*100))}%`}
+                    ${done ? `دریافت <span class="reward">+${ach.reward.toLocaleString()}</span>` : `${Math.min(100, Math.floor((prog/ach.target)*100))}%`}
                 </button>
             </div>
         `;
@@ -315,12 +302,12 @@ window.claimAch = function(id, reward) {
 }
 
 // -------------------------
-// سیستم‌ها
+// سیستم‌های پیش‌زمینه
 // -------------------------
 window.devResetGame = function() {
     swalConfig.fire({
         title: 'ریست اکانت؟', text: 'دیتای شما کاملا پاک میشود.', icon: 'warning',
-        showCancelButton: true, confirmButtonText: 'بله', cancelButtonText: 'خیر'
+        showCancelButton: true, confirmButtonText: 'بله، پاک کن', cancelButtonText: 'انصراف'
     }).then((res) => { if(res.isConfirmed){ localStorage.clear(); location.reload(); }});
 }
 
@@ -338,7 +325,6 @@ function processOffline() {
     }
 }
 
-// آپدیت ساعت و تایمر
 setInterval(() => {
     const btn = document.getElementById('claim-daily-btn');
     if (btn && btn.disabled) {
